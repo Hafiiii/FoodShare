@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "964443022529",
+    "project_id": "hackathon-f18a9",
+    "storage_bucket": "hackathon-f18a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964443022529:android:7dce2e9f0293bc7622a040",
+        "android_client_info": {
+          "package_name": "com.hackathon.foodshare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBri63B85x4Yk2g1Anr52GuDzfNxRF6D8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
