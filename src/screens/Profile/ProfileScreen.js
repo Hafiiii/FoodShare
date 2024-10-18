@@ -5,6 +5,7 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth } from '../../utils/firebase';  // Your Firebase setup
 import { firestore } from '../../utils/firebase';  // Your Firestore setup
 import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen = () => {
     const [FirstName, setFirstName] = useState('');
@@ -13,6 +14,7 @@ const ProfileScreen = () => {
     const [UserEmailAddress, setEmail] = useState('');
     const [UserGender, setGender] = useState('');
     const [loading, setLoading] = useState(false);
+    const navigation = useNavigation();
 
     const user = auth.currentUser;
 
@@ -73,6 +75,25 @@ const ProfileScreen = () => {
         }
     };
 
+    // Function to handle user logout
+    const handleLogout = async () => {
+        try {
+            await auth.signOut(); // Sign out the user
+            Toast.show({
+                type: 'success',
+                text1: 'Logged Out',
+                text2: 'You have been logged out successfully.',
+            });
+            navigation.navigate('Home');
+        } catch (error) {
+            console.error("Error logging out: ", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Logout Failed',
+                text2: 'An error occurred while logging out.',
+            });
+        }
+    };
 
     useEffect(() => {
         fetchUserProfile();
@@ -124,6 +145,13 @@ const ProfileScreen = () => {
                         style={styles.button}
                     >
                         Save Profile
+                    </Button>
+                    <Button
+                        mode="outlined"
+                        onPress={handleLogout}
+                        style={styles.logoutButton}
+                    >
+                        Logout
                     </Button>
                 </Card.Content>
             </Card>

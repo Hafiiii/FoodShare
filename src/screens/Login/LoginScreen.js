@@ -3,12 +3,14 @@ import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
 import { auth } from '../../utils/firebase'; // Ensure this path is correct
 import { signInWithEmailAndPassword } from 'firebase/auth'; // Import this function
+import { useNavigation } from '@react-navigation/native';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
   const [UserEmailAddress, setEmail] = useState('');
   const [UserPassword, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   // Function to handle user login
   const handleLogin = async () => {
@@ -18,8 +20,6 @@ const LoginScreen = ({ navigation }) => {
     try {
       // Firebase authentication using signInWithEmailAndPassword
       await signInWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
-      // Redirect to home screen after successful login
-      navigation.navigate('Profile');
     } catch (err) {
       setError(err.message);
       setLoading(false);
