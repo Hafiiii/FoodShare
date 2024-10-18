@@ -5,8 +5,8 @@ import { auth } from '../../utils/firebase'; // Ensure this path is correct
 import { signInWithEmailAndPassword } from 'firebase/auth'; // Import this function
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [UserEmailAddress, setEmail] = useState('');
+  const [UserPassword, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,9 +17,9 @@ const LoginScreen = ({ navigation }) => {
 
     try {
       // Firebase authentication using signInWithEmailAndPassword
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
       // Redirect to home screen after successful login
-      navigation.navigate('Home');
+      navigation.navigate('Profile');
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -33,14 +33,14 @@ const LoginScreen = ({ navigation }) => {
         <Card.Content>
           <TextInput
             label="Email"
-            value={email}
+            value={UserEmailAddress}
             onChangeText={text => setEmail(text)}
             keyboardType="email-address"
             style={styles.emailInput}
           />
           <TextInput
             label="Password"
-            value={password}
+            value={UserPassword}
             onChangeText={text => setPassword(text)}
             secureTextEntry
             style={styles.passwordInput}

@@ -6,13 +6,13 @@ import { sendPasswordResetEmail } from 'firebase/auth'; // Firebase method to se
 import Toast from 'react-native-toast-message'; // Toast for success or error notifications
 
 const ForgotPasswordScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
+  const [UserEmailAddress, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Function to handle password reset email
   const handlePasswordReset = async () => {
-    if (!email) {
+    if (!UserEmailAddress) {
       setError("Please enter your email address.");
       return;
     }
@@ -22,7 +22,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     try {
       // Send password reset email via Firebase
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, UserEmailAddress);
 
       // Show success notification
       Toast.show({
@@ -47,7 +47,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <Card.Content>
           <TextInput
             label="Email"
-            value={email}
+            value={UserEmailAddress}
             onChangeText={text => setEmail(text)}
             keyboardType="email-address"
             style={styles.input}

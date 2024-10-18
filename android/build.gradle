@@ -6,6 +6,7 @@ buildscript {
         targetSdkVersion = 34
         ndkVersion = "26.1.10909125"
         kotlinVersion = "1.9.24"
+        reactNativeVersion ="0.71.3"
     }
     repositories {
         google()
@@ -15,7 +16,7 @@ buildscript {
         classpath('com.google.gms:google-services:4.3.10')
         implementation platform('com.google.firebase:firebase-bom:33.4.0')
         implementation 'com.google.firebase:firebase-analytics'
-        classpath("com.android.tools.build:gradle")
+        classpath("com.android.tools.build:gradle:7.4.1") // Check the latest compatible version
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }

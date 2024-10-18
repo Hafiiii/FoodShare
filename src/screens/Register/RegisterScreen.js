@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
-import { createUserWithEmailAndPassword } from "firebase/auth";  // Firebase import
-import { auth } from '../../utils/firebase';  // Your Firebase setup
+import { createUserWithEmailAndPassword } from "firebase/auth"; // Firebase import
+import { auth } from '../../utils/firebase'; // Your Firebase setup
+import { firestore } from '../../utils/firebase'; // Your Firestore setup
+import { doc, setDoc } from 'firebase/firestore'; // Firestore functions
 import Toast from 'react-native-toast-message';
 
 const RegisterScreen = ({ navigation }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [UserEmailAddress, setEmail] = useState('');
+    const [UserPassword, setPassword] = useState('');
+    const [UserConfirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
     // Function to handle user registration
     const handleRegister = async () => {
-        if (password !== confirmPassword) {
+        if (UserPassword !== UserConfirmPassword) {
             setError("Passwords do not match.");
             return;
         }
@@ -24,7 +26,15 @@ const RegisterScreen = ({ navigation }) => {
 
         try {
             // Firebase user registration
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
+            const user = userCredential.user;
+
+            // Create a user document in Firestore
+            await setDoc(doc(firestore, "users", user.uid), {
+                UserEmailAddress: UserEmailAddress, // You can add more fields here as needed
+                CreatedAt: new Date(),
+                // Add any additional user info you want to store
+            });
 
             // Show success notification
             Toast.show({
@@ -48,21 +58,21 @@ const RegisterScreen = ({ navigation }) => {
                 <Card.Content>
                     <TextInput
                         label="Email"
-                        value={email}
+                        value={UserEmailAddress}
                         onChangeText={text => setEmail(text)}
                         keyboardType="email-address"
                         style={styles.input}
                     />
                     <TextInput
                         label="Password"
-                        value={password}
+                        value={UserPassword}
                         onChangeText={text => setPassword(text)}
                         secureTextEntry
                         style={styles.input}
                     />
                     <TextInput
                         label="Confirm Password"
-                        value={confirmPassword}
+                        value={UserConfirmPassword}
                         onChangeText={text => setConfirmPassword(text)}
                         secureTextEntry
                         style={styles.input}

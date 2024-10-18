@@ -1,7 +1,9 @@
 import React from 'react'
+import { Provider as PaperProvider } from 'react-native-paper';
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
 import { createDrawerNavigator } from '@react-navigation/drawer'
+import BottomBar from '../components/BottomBar/BottomBarContainer';
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
@@ -13,6 +15,7 @@ import DrawerContainer from '../screens/DrawerContainer/DrawerContainer';
 import IngredientScreen from '../screens/Ingredient/IngredientScreen';
 import SearchScreen from '../screens/Search/SearchScreen';
 import IngredientsDetailsScreen from '../screens/IngredientsDetails/IngredientsDetailsScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +41,7 @@ function MainNavigator() {
       <Stack.Screen name='Ingredient' component={IngredientScreen} />
       <Stack.Screen name='Search' component={SearchScreen} />
       <Stack.Screen name='IngredientsDetails' component={IngredientsDetailsScreen} />
+      <Stack.Screen name='Profile' component={ProfileScreen} />
     </Stack.Navigator>
   )
 }
@@ -65,9 +69,12 @@ function DrawerStack() {
 
 export default function AppContainer() {
   return (
-    <NavigationContainer>
-      <DrawerStack />
-    </NavigationContainer>
+    <PaperProvider>
+      <NavigationContainer>
+        {/* <DrawerStack /> */}
+        <BottomBar />
+      </NavigationContainer>
+    </PaperProvider>
   )
 }
 
