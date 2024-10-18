@@ -1,28 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, Card } from 'react-native-paper';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth } from '../../utils/firebase';  // Your Firebase setup
-import { firestore } from '../../utils/firebase';  // Your Firestore setup
-import Toast from 'react-native-toast-message';
+import { Button, Card, TextInput } from 'react-native-paper';
+// @react-navigation
 import { useNavigation } from '@react-navigation/native';
+// firebase
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../../utils/firebase';
+// components
+import Toast from 'react-native-toast-message';
 
-const ProfileScreen = () => {
+// ----------------------------------------------------------------------
+
+export default function ProfileScreen() {
+    const navigation = useNavigation();
     const [FirstName, setFirstName] = useState('');
     const [LastName, setLastName] = useState('');
-    const [UserContactNo, setContactNo] = useState(''); // Initialize as an empty string
+    const [UserContactNo, setContactNo] = useState('');
     const [UserEmailAddress, setEmail] = useState('');
     const [UserGender, setGender] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigation = useNavigation();
 
     const user = auth.currentUser;
 
-    // Function to save user profile
     const handleSaveProfile = async () => {
         if (!user) return;
 
-        // Validation to ensure fields are not empty
         if (!FirstName || !LastName || !UserContactNo || !UserEmailAddress || !UserGender) {
             Toast.show({
                 type: 'error',
@@ -42,7 +44,6 @@ const ProfileScreen = () => {
                 UserGender: UserGender || ''
             });
 
-            // Show success notification
             Toast.show({
                 type: 'success',
                 text1: 'Profile Updated',
@@ -55,8 +56,6 @@ const ProfileScreen = () => {
         }
     };
 
-
-    // Function to fetch user profile details
     const fetchUserProfile = async () => {
         if (!user) return;
 
@@ -68,17 +67,17 @@ const ProfileScreen = () => {
             setFirstName(data.FirstName || '');
             setLastName(data.LastName || '');
             setContactNo(data.UserContactNo || '');
-            setEmail(data.UserEmailAddress || '');  // Ensure email is set
+            setEmail(data.UserEmailAddress || '');
             setGender(data.UserGender || '');
         } else {
             console.log("No such document!");
         }
     };
 
-    // Function to handle user logout
     const handleLogout = async () => {
         try {
-            await auth.signOut(); // Sign out the user
+            await auth.signOut();
+
             Toast.show({
                 type: 'success',
                 text1: 'Logged Out',
@@ -87,6 +86,7 @@ const ProfileScreen = () => {
             navigation.navigate('Home');
         } catch (error) {
             console.error("Error logging out: ", error);
+
             Toast.show({
                 type: 'error',
                 text1: 'Logout Failed',
@@ -128,7 +128,7 @@ const ProfileScreen = () => {
                         value={UserEmailAddress}
                         onChangeText={text => setEmail(text)}
                         keyboardType="email-address"
-                        editable={false} // Make this read-only since the user is already registered
+                        editable={false}
                         style={styles.input}
                     />
                     <TextInput
@@ -157,7 +157,7 @@ const ProfileScreen = () => {
             </Card>
         </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -175,6 +175,4 @@ const styles = StyleSheet.create({
     button: {
         marginVertical: 20,
     },
-});
-
-export default ProfileScreen;
+})

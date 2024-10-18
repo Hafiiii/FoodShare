@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
+// @react-navigation
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// firebase
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../utils/firebase';
+// components
 import Iconify from 'react-native-iconify';
-
-// Import your screens
+// Screens
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
@@ -16,10 +18,11 @@ import CategoriesScreen from '../screens/Categories/CategoriesScreen';
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 
+// ----------------------------------------------------------------------
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Main Stack Navigator for Authentication
 const MainStackNavigator = () => (
   <Stack.Navigator
     screenOptions={{
@@ -37,7 +40,6 @@ const MainStackNavigator = () => (
   </Stack.Navigator>
 );
 
-// Main Tab Navigator for Home and other features
 const MainTabNavigator = () => (
   <Tab.Navigator>
     <Tab.Screen
@@ -74,7 +76,6 @@ const MainTabNavigator = () => (
 export default function AppContainer() {
   const [user, setUser] = useState(null);
 
-  // Check if user is logged in
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -87,7 +88,6 @@ export default function AppContainer() {
     <PaperProvider>
       <NavigationContainer>
         {user ? (
-          // If user is logged in, show the main app with bottom tabs
           <>
             <MainTabNavigator />
             <Tab.Screen
@@ -101,7 +101,6 @@ export default function AppContainer() {
             />
           </>
         ) : (
-          // If user is not logged in, show the authentication stack
           <MainStackNavigator />
         )}
       </NavigationContainer>

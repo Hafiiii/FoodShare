@@ -1,24 +1,26 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
-import { auth } from '../../utils/firebase'; // Ensure this path is correct
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Import this function
+// @react-navigation
 import { useNavigation } from '@react-navigation/native';
+// firebase
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../utils/firebase';
 
-const LoginScreen = () => {
+// ----------------------------------------------------------------------
+
+export default function LoginScreen() {
+  const navigation = useNavigation();
   const [UserEmailAddress, setEmail] = useState('');
   const [UserPassword, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
 
-  // Function to handle user login
   const handleLogin = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Firebase authentication using signInWithEmailAndPassword
       await signInWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
     } catch (err) {
       setError(err.message);
@@ -66,13 +68,14 @@ const LoginScreen = () => {
           </Button>
         </Card.Content>
       </Card>
+      
       <View style={styles.footer}>
         <Text>Don't have an account? </Text>
         <Button onPress={() => navigation.navigate('Register')}>Sign Up</Button>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -103,6 +106,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
-
-export default LoginScreen;
+})
