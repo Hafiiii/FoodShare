@@ -1,27 +1,41 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
-import { auth } from '../../utils/firebase'; // Ensure this path is correct
-import { signInWithEmailAndPassword } from 'firebase/auth'; // Import this function
+import { auth } from '../../utils/firebase'; // Firebase setup
+import { sendPasswordResetEmail } from 'firebase/auth'; // Firebase method to send password reset email
+import Toast from 'react-native-toast-message'; // Toast for success or error notifications
 
-const LoginScreen = ({ navigation }) => {
+const ForgotPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Function to handle user login
-  const handleLogin = async () => {
+  // Function to handle password reset email
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setError("Please enter your email address.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      // Firebase authentication using signInWithEmailAndPassword
-      await signInWithEmailAndPassword(auth, email, password);
-      // Redirect to home screen after successful login
-      navigation.navigate('Home');
+      // Send password reset email via Firebase
+      await sendPasswordResetEmail(auth, email);
+
+      // Show success notification
+      Toast.show({
+        type: 'success',
+        text1: 'Password Reset Email Sent',
+        text2: `Please check your email to reset your password.`,
+      });
+
+      // Redirect to Login page
+      navigation.navigate('Login');
     } catch (err) {
       setError(err.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -29,46 +43,30 @@ const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
-        <Card.Title title="Login" />
+        <Card.Title title="Forgot Password" />
         <Card.Content>
           <TextInput
             label="Email"
             value={email}
             onChangeText={text => setEmail(text)}
             keyboardType="email-address"
-            style={styles.emailInput}
+            style={styles.input}
           />
-          <TextInput
-            label="Password"
-            value={password}
-            onChangeText={text => setPassword(text)}
-            secureTextEntry
-            style={styles.passwordInput}
-          />
-          <Button
-            labelStyle={{ color: 'grey' }}
-            mode="text"
-            onPress={() => navigation.navigate('ResetPassword')}
-            style={styles.forgotPasswordButton}
-          >
-            Forgot Password?
-          </Button>
-
           {error && <Text style={styles.errorText}>{error}</Text>}
           <Button
             mode="contained"
-            onPress={handleLogin}
+            onPress={handlePasswordReset}
             loading={loading}
             disabled={loading}
             style={styles.button}
           >
-            Login
+            Send Reset Email
           </Button>
         </Card.Content>
       </Card>
       <View style={styles.footer}>
-        <Text>Don't have an account? </Text>
-        <Button onPress={() => navigation.navigate('Register')}>Sign Up</Button>
+        <Text>Remembered your password? </Text>
+        <Button onPress={() => navigation.navigate('Login')}>Login</Button>
       </View>
     </View>
   );
@@ -84,7 +82,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 20,
   },
-  emailInput: {
+  input: {
     marginBottom: 20,
   },
   button: {
@@ -94,9 +92,6 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 20,
   },
-  forgotPasswordButton: {
-    alignSelf: 'flex-end',
-  },
   footer: {
     marginTop: 20,
     flexDirection: 'row',
@@ -105,4 +100,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default ForgotPasswordScreen;
