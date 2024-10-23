@@ -14,7 +14,8 @@ import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
 import HomeScreen from '../screens/Home/HomeScreen';
-import CategoriesScreen from '../screens/Categories/CategoriesScreen';
+import CategoriesScreen from '../screens/Categories/CategoriesScreen'; // Updated: Ensure correct path
+import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; // Updated: Ensure correct path
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 
@@ -22,6 +23,13 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const CategoriesStackNavigator = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Categories" component={CategoriesScreen} />
+    <Stack.Screen name="CategoriesScreenDetail" component={CategoriesScreenDetails} />
+  </Stack.Navigator>
+);
 
 const MainStackNavigator = () => (
   <Stack.Navigator
@@ -51,9 +59,10 @@ const MainTabNavigator = () => (
         ),
       }}
     />
+    {/* Updated: Use the CategoriesStackNavigator to handle navigation between Categories and CategoryDetail */}
     <Tab.Screen
-      name="Categories"
-      component={CategoriesScreen}
+      name="Location"
+      component={CategoriesStackNavigator}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Iconify icon="mdi:heart" size={size || 24} color={color || "#900"} />

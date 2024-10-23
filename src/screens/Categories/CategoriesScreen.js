@@ -30,7 +30,8 @@ export default function CategoriesScreen(props) {
   const onPressCategory = (item) => {
     const title = item.name;
     const category = item;
-    navigation.navigate("RecipesList", { category, title });
+    // Navigate to CategoryDetailScreen when an item is pressed
+    navigation.navigate("CategoriesScreenDetail", { category, title });
   };
 
   const renderCategory = ({ item }) => (
