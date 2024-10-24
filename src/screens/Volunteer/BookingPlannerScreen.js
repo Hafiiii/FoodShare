@@ -1,15 +1,72 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Card } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
-const BookingPlannerScreen = ({ navigation }) => {
+const BookingPlannerScreen = () => {
+  const navigation = useNavigation();
+
+  // State for booking details
+  const [recipientName, setRecipientName] = useState('');
+  const [time, setTime] = useState('');
+  const [location, setLocation] = useState('');
+  
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Booking Planner</Text>
-      {/* Button to navigate to booking details */}
-      <Button
-        title="Choose your shift"
-        onPress={() => navigation.navigate('BookingDetails')}
-      />
+      <Card style={styles.card}>
+        <Card.Title title="Booking Planner" />
+        <Card.Content>
+          <TextInput
+            label="Recipient Name"
+            value={recipientName}
+            onChangeText={setRecipientName}
+            style={styles.input}
+          />
+          <TextInput
+            label="Time (12-hour format) & Date"
+            value={time}
+            onChangeText={setTime}
+            placeholder="e.g., 08:00 PM - 09:00 PM"
+            style={styles.input}
+          />
+          <TextInput
+            label="Location"
+            value={location}
+            onChangeText={setLocation}
+            placeholder="e.g., Kuching"
+            style={styles.input}
+          />
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate('BookingDetails', {
+              recipientName, time, location
+            })}
+            style={styles.button}
+          >
+            Proceed to Booking Details
+          </Button>
+        </Card.Content>
+      </Card>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  card: {
+    padding: 20,
+  },
+  input: {
+    marginBottom: 20,
+  },
+  button: {
+    marginVertical: 20,
+  },
+});
+
+export default BookingPlannerScreen;

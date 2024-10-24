@@ -18,6 +18,7 @@ import CategoriesScreen from '../screens/Categories/CategoriesScreen'; // Update
 import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; // Updated: Ensure correct path
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import BookingPlannerScreen from '../screens/BookingPlanner/BookingPlannerScreen';
 
 // ----------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ const MainStackNavigator = () => (
     <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
   </Stack.Navigator>
 );
+
 
 const MainTabNavigator = () => (
   <Tab.Navigator>
