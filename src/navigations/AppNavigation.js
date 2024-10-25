@@ -13,12 +13,12 @@ import Iconify from 'react-native-iconify';
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
-import HomeScreen from '../screens/Home/HomeScreen';
+import HomeScreen from '../screens/Home/DonatorHomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen'; // Updated: Ensure correct path
 import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; // Updated: Ensure correct path
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-import BookingPlannerScreen from '../screens/BookingPlanner/BookingPlannerScreen';
+// import BookingPlannerScreen from '../screens/BookingPlanner/BookingPlannerScreen';
 
 // ----------------------------------------------------------------------
 
@@ -35,12 +35,7 @@ const CategoriesStackNavigator = () => (
 const MainStackNavigator = () => (
   <Stack.Navigator
     screenOptions={{
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        textAlign: 'center',
-        alignSelf: 'center',
-        flex: 1,
-      },
+      headerShown: false,
     }}
   >
     <Stack.Screen name="Login" component={LoginScreen} />
@@ -48,7 +43,6 @@ const MainStackNavigator = () => (
     <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
   </Stack.Navigator>
 );
-
 
 const MainTabNavigator = () => (
   <Tab.Navigator>
@@ -86,31 +80,26 @@ const MainTabNavigator = () => (
 
 export default function AppContainer() {
   const [user, setUser] = useState(null);
+  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      if (initializing) setInitializing(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [initializing]);
+
+  if (initializing) {
+    return null;
+  }
 
   return (
     <PaperProvider>
       <NavigationContainer>
         {user ? (
-          <>
-            <MainTabNavigator />
-            <Tab.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                tabBarButton: (props) => (
-                  <LoginButton {...props} />
-                ),
-              }}
-            />
-          </>
+          <MainTabNavigator />
         ) : (
           <MainStackNavigator />
         )}

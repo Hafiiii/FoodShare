@@ -1,109 +1,20 @@
-import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { TextInput, Button, Text, Card } from 'react-native-paper';
-// @react-navigation
-import { useNavigation } from '@react-navigation/native';
-// firebase
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../utils/firebase';
+import { View } from 'react-native';
+// components
+import LoginForm from './LoginForm';
 
 // ----------------------------------------------------------------------
 
 export default function LoginScreen() {
-  const navigation = useNavigation();
-  const [UserEmailAddress, setEmail] = useState('');
-  const [UserPassword, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await signInWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      <Card style={styles.card}>
-        <Card.Title title="Login" />
-        <Card.Content>
-          <TextInput
-            label="Email"
-            value={UserEmailAddress}
-            onChangeText={text => setEmail(text)}
-            keyboardType="email-address"
-            style={styles.emailInput}
-          />
-          <TextInput
-            label="Password"
-            value={UserPassword}
-            onChangeText={text => setPassword(text)}
-            secureTextEntry
-            style={styles.passwordInput}
-          />
-          <Button
-            labelStyle={{ color: 'grey' }}
-            mode="text"
-            onPress={() => navigation.navigate('ResetPassword')}
-            style={styles.forgotPasswordButton}
-          >
-            Forgot Password?
-          </Button>
-
-          {error && <Text style={styles.errorText}>{error}</Text>}
-          <Button
-            mode="contained"
-            onPress={handleLogin}
-            loading={loading}
-            disabled={loading}
-            style={styles.button}
-          >
-            Login
-          </Button>
-        </Card.Content>
-      </Card>
-      
-      <View style={styles.footer}>
-        <Text>Don't have an account? </Text>
-        <Button onPress={() => navigation.navigate('Register')}>Sign Up</Button>
-      </View>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        padding: 20,
+        backgroundColor: '#f5f5f5',
+      }}
+    >
+      <LoginForm />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  card: {
-    padding: 20,
-  },
-  emailInput: {
-    marginBottom: 20,
-  },
-  button: {
-    marginVertical: 20,
-  },
-  errorText: {
-    color: 'red',
-    marginBottom: 20,
-  },
-  forgotPasswordButton: {
-    alignSelf: 'flex-end',
-  },
-  footer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})

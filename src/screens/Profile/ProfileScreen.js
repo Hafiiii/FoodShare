@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { Button, Card, TextInput } from 'react-native-paper';
 // @react-navigation
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +18,7 @@ export default function ProfileScreen() {
     const [UserContactNo, setContactNo] = useState('');
     const [UserEmailAddress, setEmail] = useState('');
     const [UserGender, setGender] = useState('');
+    const [UserRole, setRole] = useState('');
     const [loading, setLoading] = useState(false);
 
     const user = auth.currentUser;
@@ -25,7 +26,7 @@ export default function ProfileScreen() {
     const handleSaveProfile = async () => {
         if (!user) return;
 
-        if (!FirstName || !LastName || !UserContactNo || !UserEmailAddress || !UserGender) {
+        if (!FirstName || !LastName || !UserContactNo || !UserEmailAddress || !UserGender || !UserRole) {
             Toast.show({
                 type: 'error',
                 text1: 'Error',
@@ -41,7 +42,8 @@ export default function ProfileScreen() {
                 LastName: LastName || '',
                 UserContactNo: UserContactNo || '',
                 UserEmailAddress: UserEmailAddress || '',
-                UserGender: UserGender || ''
+                UserGender: UserGender || '',
+                UserRole: UserRole || ''
             });
 
             Toast.show({
@@ -69,6 +71,7 @@ export default function ProfileScreen() {
             setContactNo(data.UserContactNo || '');
             setEmail(data.UserEmailAddress || '');
             setGender(data.UserGender || '');
+            setRole(data.UserRole || '');
         } else {
             console.log("No such document!");
         }
@@ -100,28 +103,35 @@ export default function ProfileScreen() {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <Card style={styles.card}>
+        <View
+            style={{
+                flex: 1,
+                justifyContent: 'center',
+                padding: 20,
+                backgroundColor: '#f5f5f5',
+            }}
+        >
+            <Card style={{ padding: 20 }}>
                 <Card.Title title="Profile" />
                 <Card.Content>
                     <TextInput
                         label="First Name"
                         value={FirstName}
                         onChangeText={text => setFirstName(text)}
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
                     <TextInput
                         label="Last Name"
                         value={LastName}
                         onChangeText={text => setLastName(text)}
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
                     <TextInput
                         label="Contact Number"
                         value={UserContactNo}
                         onChangeText={text => setContactNo(text)}
                         keyboardType="phone-pad"
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
                     <TextInput
                         label="Email"
@@ -129,27 +139,33 @@ export default function ProfileScreen() {
                         onChangeText={text => setEmail(text)}
                         keyboardType="email-address"
                         editable={false}
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
                     <TextInput
                         label="Gender"
                         value={UserGender}
                         onChangeText={text => setGender(text)}
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
+                    />
+                    <TextInput
+                        label="Role"
+                        value={UserRole}
+                        onChangeText={text => setRole(text)}
+                        editable={false}
+                        style={{ marginBottom: 20 }}
                     />
                     <Button
                         mode="contained"
                         onPress={handleSaveProfile}
                         loading={loading}
                         disabled={loading}
-                        style={styles.button}
+                        style={{ marginVertical: 20 }}
                     >
                         Save Profile
                     </Button>
                     <Button
                         mode="outlined"
                         onPress={handleLogout}
-                        style={styles.logoutButton}
                     >
                         Logout
                     </Button>
@@ -158,21 +174,3 @@ export default function ProfileScreen() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#f5f5f5',
-    },
-    card: {
-        padding: 20,
-    },
-    input: {
-        marginBottom: 20,
-    },
-    button: {
-        marginVertical: 20,
-    },
-})

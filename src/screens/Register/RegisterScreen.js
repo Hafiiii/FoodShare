@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, Card, Text, TextInput } from 'react-native-paper';
+import { View } from 'react-native';
+import { Button, Card, Text, TextInput, RadioButton } from 'react-native-paper';
 // @react-navigation
 import { useNavigation } from '@react-navigation/native';
 // firebase
@@ -16,6 +16,7 @@ export default function RegisterScreen() {
     const [UserEmailAddress, setEmail] = useState('');
     const [UserPassword, setPassword] = useState('');
     const [UserConfirmPassword, setConfirmPassword] = useState('');
+    const [UserRole, setRole] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -34,6 +35,7 @@ export default function RegisterScreen() {
 
             await setDoc(doc(firestore, "users", user.uid), {
                 UserEmailAddress: UserEmailAddress,
+                UserRole: UserRole,
                 CreatedAt: new Date(),
             });
 
@@ -52,8 +54,15 @@ export default function RegisterScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Card style={styles.card}>
+        <View
+            style={{
+                flex: 1,
+                justifyContent: 'center',
+                padding: 20,
+                backgroundColor: '#f5f5f5',
+            }}
+        >
+            <Card style={{ padding: 20 }}>
                 <Card.Title title="Register" />
                 <Card.Content>
                     <TextInput
@@ -61,67 +70,54 @@ export default function RegisterScreen() {
                         value={UserEmailAddress}
                         onChangeText={text => setEmail(text)}
                         keyboardType="email-address"
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
                     <TextInput
                         label="Password"
                         value={UserPassword}
                         onChangeText={text => setPassword(text)}
                         secureTextEntry
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
                     <TextInput
                         label="Confirm Password"
                         value={UserConfirmPassword}
                         onChangeText={text => setConfirmPassword(text)}
                         secureTextEntry
-                        style={styles.input}
+                        style={{ marginBottom: 20 }}
                     />
-                    {error && <Text style={styles.errorText}>{error}</Text>}
+
+                    <RadioButton.Group onValueChange={newValue => setRole(newValue)} value={UserRole}>
+                        <RadioButton.Item label="Donator" value="Donator" />
+                        <RadioButton.Item label="Rider" value="Rider" />
+                        <RadioButton.Item label="Receiver" value="Receiver" />
+                    </RadioButton.Group>
+
+                    {error && <Text style={{ color: 'red', marginBottom: 20 }}>{error}</Text>}
+
                     <Button
                         mode="contained"
                         onPress={handleRegister}
                         loading={loading}
                         disabled={loading}
-                        style={styles.button}
+                        style={{ marginVertical: 20 }}
                     >
                         Register
                     </Button>
                 </Card.Content>
             </Card>
 
-            <View style={styles.footer}>
+            <View
+                style={{
+                    marginTop: 20,
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
                 <Text>Already have an account? </Text>
                 <Button onPress={() => navigation.navigate('Login')}>Login</Button>
             </View>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-        backgroundColor: '#f5f5f5',
-    },
-    card: {
-        padding: 20,
-    },
-    input: {
-        marginBottom: 20,
-    },
-    button: {
-        marginVertical: 20,
-    },
-    errorText: {
-        color: 'red',
-        marginBottom: 20,
-    },
-    footer: {
-        marginTop: 20,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-})
