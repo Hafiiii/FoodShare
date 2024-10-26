@@ -1,44 +1,85 @@
-import { useLayoutEffect } from "react";
-import { FlatList, Text, View, TouchableHighlight, Image } from "react-native";
-import styles from "./styles";
-import { recipes } from "../../data/dataArrays";
-import MenuImage from "../../components/MenuImage/MenuImage";
-import { getCategoryName } from "../../data/MockDataAPI";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { TextInput, Button, Card } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+// import { auth } from '../utils/firebase';
+// import { onAuthStateChanged } from 'firebase/auth';
 
-export default function HomeScreen(props) {
-  const { navigation } = props;
+const RiderHomeScreen = () => {
+  const navigation = useNavigation();
 
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerLeft: () => (
-  //       <MenuImage
-  //         onPress={() => {
-  //           navigation.openDrawer();
-  //         }}
-  //       />
-  //     ),
-  //     headerRight: () => <View />,
-  //   });
-  // }, []);
+  // Retain Firebase authentication observer
+  /*
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigation.replace('Login');
+      }
+    });
+    return () => unsubscribe();
+  }, []); */
 
-  const onPressRecipe = (item) => {
-    navigation.navigate("Recipe", { item });
-  };
-
-  const renderRecipes = ({ item }) => (
-    <TouchableHighlight underlayColor="rgba(73,182,77,0.9)" onPress={() => onPressRecipe(item)}>
-      <View style={styles.container}>
-        <Image style={styles.photo} source={{ uri: item.photo_url }} />
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.category}>{getCategoryName(item.categoryId)}</Text>
-      </View>
-    </TouchableHighlight>
-  );
-
+  // State for booking details
+  const [recipientName, setRecipientName] = useState('');
+  const [time, setTime] = useState('');
+  const [location, setLocation] = useState('');
+  
   return (
-    <View>
-        <Text style={{fontSize: 40}}>RIDER PAGE</Text>
-      {/* <FlatList vertical showsVerticalScrollIndicator={false} numColumns={2} data={recipes} renderItem={renderRecipes} keyExtractor={(item) => `${item.recipeId}`} /> */}
+    <View style={styles.container}>
+      <Card style={styles.card}>
+        <Card.Title title="Booking Planner" />
+        <Card.Content>
+          <TextInput
+            label="Recipient Name"
+            value={recipientName}
+            onChangeText={setRecipientName}
+            style={styles.input}
+          />
+          <TextInput
+            label="Time (12-hour format) & Date"
+            value={time}
+            onChangeText={setTime}
+            placeholder="e.g., 08:00 PM - 09:00 PM"
+            style={styles.input}
+          />
+          <TextInput
+            label="Location"
+            value={location}
+            onChangeText={setLocation}
+            placeholder="e.g., Kuching"
+            style={styles.input}
+          />
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate('BookingDetails', {
+              recipientName, time, location
+            })}
+            style={styles.button}
+          >
+            Proceed to Booking Details
+          </Button>
+        </Card.Content>
+      </Card>
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  card: {
+    padding: 20,
+  },
+  input: {
+    marginBottom: 20,
+  },
+  button: {
+    marginVertical: 20,
+  },
+});
+
+export default RiderHomeScreen;
