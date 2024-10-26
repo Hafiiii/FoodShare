@@ -1,3 +1,4 @@
+// context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../utils/firebase';
@@ -17,12 +18,16 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, [initializing]);
 
+  const handleRegister = () => {
+    setUser(null);
+  };
+
   const handleLogin = () => {
     setUser(auth.currentUser);
   };
 
   return (
-    <AuthContext.Provider value={{ user, initializing, handleLogin }}>
+    <AuthContext.Provider value={{ user, initializing, handleRegister, handleLogin }}>
       {children}
     </AuthContext.Provider>
   );

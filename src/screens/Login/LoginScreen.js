@@ -1,10 +1,16 @@
 import { View } from 'react-native';
+import { Text } from 'react-native-paper';
+// @react-navigation
+import { Link } from '@react-navigation/native';
 // components
-import LoginForm from './LoginForm';
+import AuthLoginForm from './AuthLoginForm';
+import { useTheme } from '../../theme';
 
 // ----------------------------------------------------------------------
 
 export default function LoginScreen() {
+  const { palette } = useTheme();
+
   return (
     <View
       style={{
@@ -14,7 +20,25 @@ export default function LoginScreen() {
         backgroundColor: '#f5f5f5',
       }}
     >
-      <LoginForm />
+      <AuthLoginForm />
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Text>Don't have an account? </Text>
+        <Link
+          to={{ screen: 'Register' }}
+          style={{
+            color: palette.primary.main,
+          }}
+        >
+          Sign Up
+        </Link>
+      </View>
     </View>
   );
 }

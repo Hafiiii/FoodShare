@@ -95,12 +95,11 @@ const MainTabNavigator = ({ component }) => (
 );
 
 export default function AppContainer() {
-  const [user, setUser] = useState(null);
+  const { user, initializing } = useAuth();
   const [userRole, setUserRole] = useState(null);
-  const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const fetchUserRole = async () => {
       if (user) {
         const userDoc = doc(firestore, 'users', user.uid);
         const docSnap = await getDoc(userDoc);
@@ -109,43 +108,38 @@ export default function AppContainer() {
         } else {
           console.log("No such document!");
         }
+      } else {
+        setUserRole(null);
       }
+    };
 
-      setUser(user);
-      if (initializing) setInitializing(false);
-    });
-
-    return () => unsubscribe();
-  }, [initializing]);
+    fetchUserRole();
+  }, [user]);
 
   if (initializing) {
     return null;
   }
 
   return (
-    <PaperProvider theme={theme}>
-      <AuthProvider>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {user ? (
-              <Stack.Screen name="MainTabNavigator">
-                {() => {
-                  if (userRole === 'Donator') {
-                    return <MainTabNavigator component={DonatorHomeScreen} />;
-                  } else if (userRole === 'Receiver') {
-                    return <MainTabNavigator component={ReceiverHomeScreen} />;
-                  } else if (userRole === 'Rider') {
-                    return <MainTabNavigator component={RiderHomeScreen} />;
-                  }
-                  return <DonatorHomeScreen />; // Default fallback
-                }}
-              </Stack.Screen>
-            ) : (
-              <Stack.Screen name="MainStackNavigator" component={MainStackNavigator} />
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </AuthProvider>
-    </PaperProvider>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user && userRole ? (
+          <Stack.Screen name="MainTabNavigator">
+            {() => {
+              if (userRole === 'Donator') {
+                return <MainTabNavigator component={DonatorHomeScreen} />;
+              } else if (userRole === 'Receiver') {
+                return <MainTabNavigator component={ReceiverHomeScreen} />;
+              } else if (userRole === 'Rider') {
+                return <MainTabNavigator component={RiderHomeScreen} />;
+              }
+              return <ReceiverHomeScreen />;
+            }}
+          </Stack.Screen>
+        ) : (
+          <Stack.Screen name="MainStackNavigator" component={MainStackNavigator} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
