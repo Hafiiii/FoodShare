@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View } from 'react-native';
-import { Button, Card, TextInput } from 'react-native-paper';
+import { View, TouchableOpacity, FlatList } from 'react-native';
+import { Button, Card, TextInput, Modal, Portal, IconButton, Text } from 'react-native-paper';
 // @react-navigation
 import { useNavigation } from '@react-navigation/native';
 // firebase
@@ -20,8 +20,22 @@ export default function ProfileScreen() {
     const [UserGender, setGender] = useState('');
     const [UserRole, setRole] = useState('');
     const [loading, setLoading] = useState(false);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
+    const genderOptions = ["Male", "Female", "Other"];
 
     const user = auth.currentUser;
+
+    const renderGenderOption = ({ item }) => (
+        <TouchableOpacity
+            style={{ padding: 15 }}
+            onPress={() => {
+                setGender(item);
+                setDropdownVisible(false);
+            }}
+        >
+            <Text>{item}</Text>
+        </TouchableOpacity>
+    );
 
     const handleSaveProfile = async () => {
         if (!user) return;
@@ -86,7 +100,7 @@ export default function ProfileScreen() {
                 text1: 'Logged Out',
                 text2: 'You have been logged out successfully.',
             });
-            navigation.navigate('Home');
+            navigation.navigate('Login');
         } catch (error) {
             console.error("Error logging out: ", error);
 
@@ -127,10 +141,10 @@ export default function ProfileScreen() {
                         style={{ marginBottom: 20 }}
                     />
                     <TextInput
-                        label="Contact Number"
-                        value={UserContactNo}
-                        onChangeText={text => setContactNo(text)}
-                        keyboardType="phone-pad"
+                        label="Role"
+                        value={UserRole}
+                        onChangeText={text => setRole(text)}
+                        editable={false}
                         style={{ marginBottom: 20 }}
                     />
                     <TextInput
@@ -142,18 +156,50 @@ export default function ProfileScreen() {
                         style={{ marginBottom: 20 }}
                     />
                     <TextInput
-                        label="Gender"
-                        value={UserGender}
-                        onChangeText={text => setGender(text)}
+                        label="Contact Number"
+                        value={UserContactNo}
+                        onChangeText={text => setContactNo(text)}
+                        keyboardType="phone-pad"
                         style={{ marginBottom: 20 }}
                     />
-                    <TextInput
-                        label="Role"
-                        value={UserRole}
-                        onChangeText={text => setRole(text)}
-                        editable={false}
+                    <TouchableOpacity
                         style={{ marginBottom: 20 }}
-                    />
+                        onPress={() => setDropdownVisible(true)}
+                    >
+                        <TextInput
+                            label="Gender"
+                            value={UserGender}
+                            editable={false}
+                        />
+                        <IconButton
+                            icon="chevron-down"
+                            size={20}
+                            style={{
+                                position: 'absolute',
+                                right: 0,
+                                top: 10,
+                            }}
+                        />
+                    </TouchableOpacity>
+                    <Portal>
+                        <Modal
+                            visible={dropdownVisible}
+                            onDismiss={() => setDropdownVisible(false)}
+                            contentContainerStyle={{
+                                backgroundColor: 'white',
+                                padding: 10,
+                                marginHorizontal: 20,
+                                borderRadius: 8,
+                            }}
+                        >
+                            <FlatList
+                                data={genderOptions}
+                                renderItem={renderGenderOption}
+                                keyExtractor={(item) => item}
+                            />
+                        </Modal>
+                    </Portal>
+
                     <Button
                         mode="contained"
                         onPress={handleSaveProfile}

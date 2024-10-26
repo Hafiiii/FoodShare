@@ -6,28 +6,31 @@ import { useNavigation } from '@react-navigation/native';
 // firebase
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../../utils/firebase';
-
-// ----------------------------------------------------------------------
+// auth
+import { useAuth } from '../../context/AuthContext';
+// components
+import { useTheme } from '../../theme';
 
 export default function LoginForm() {
+  const { palette } = useTheme();
   const navigation = useNavigation();
+  const { handleLogin } = useAuth();
   const [UserEmailAddress, setEmail] = useState('');
   const [UserPassword, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLoginAttempt = async () => {
     setLoading(true);
     setError(null);
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
-      const user = userCredential.user;
+      handleLogin();
 
     } catch (err) {
       console.error("Error during login:", err);
       setError(err.message);
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -51,7 +54,7 @@ export default function LoginForm() {
           secureTextEntry
         />
         <Button
-          labelStyle={{ color: "text.disabled" }}
+          labelStyle={{ color: palette.disabled.main, fontSize: 12 }}
           mode="text"
           onPress={() => navigation.navigate('ResetPassword')}
           style={{ alignSelf: 'flex-end' }}
@@ -59,11 +62,11 @@ export default function LoginForm() {
           Forgot Password?
         </Button>
 
-        {error && <Text style={{ color: 'red', marginBottom: 20 }}>{error}</Text>}
+        {error && <Text style={{ color: palette.error.main, marginBottom: 20 }}>{error}</Text>}
 
         <Button
           mode="contained"
-          onPress={handleLogin}
+          onPress={handleLoginAttempt}
           loading={loading}
           disabled={loading}
           style={{ marginTop: 20 }}

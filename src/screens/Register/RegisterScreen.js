@@ -33,19 +33,20 @@ export default function RegisterScreen() {
             const userCredential = await createUserWithEmailAndPassword(auth, UserEmailAddress, UserPassword);
             const user = userCredential.user;
 
-            await setDoc(doc(firestore, "users", user.uid), {
-                UserEmailAddress: UserEmailAddress,
-                UserRole: UserRole,
-                CreatedAt: new Date(),
-            });
+            navigation.navigate('Login');
 
             Toast.show({
                 type: 'success',
                 text1: 'Registration Successful',
-                text2: 'You have successfully registered 🎉',
+                // text2: 'A verification email has been sent. Please verify your email before logging in.',
             });
 
-            navigation.navigate('Login');
+            await setDoc(doc(firestore, "users", user.uid), {
+                UserEmailAddress: UserEmailAddress,
+                UserRole: UserRole,
+                CreatedAt: new Date(),
+                Verified: false,
+            });
         } catch (err) {
             setError(err.message);
         } finally {

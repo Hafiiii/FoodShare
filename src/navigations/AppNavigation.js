@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 // @react-navigation
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// context
+import { AuthProvider, useAuth } from '../context/AuthContext';
 // firebase
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../utils/firebase';
@@ -21,6 +23,14 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 // import BookingPlannerScreen from '../screens/BookingPlanner/BookingPlannerScreen';
 
 // ----------------------------------------------------------------------
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#4CAF50',
+  },
+};
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,7 +55,10 @@ const MainStackNavigator = () => (
 );
 
 const MainTabNavigator = () => (
-  <Tab.Navigator>
+  <Tab.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}>
     <Tab.Screen
       name="Home"
       component={HomeScreen}
@@ -81,6 +94,7 @@ const MainTabNavigator = () => (
 export default function AppContainer() {
   const [user, setUser] = useState(null);
   const [initializing, setInitializing] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -96,14 +110,18 @@ export default function AppContainer() {
   }
 
   return (
-    <PaperProvider>
-      <NavigationContainer>
-        {user ? (
-          <MainTabNavigator />
-        ) : (
-          <MainStackNavigator />
-        )}
-      </NavigationContainer>
+    <PaperProvider theme={theme}>
+      <AuthProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {user ? (
+              <Stack.Screen name="MainTabNavigator" component={MainTabNavigator} />
+            ) : (
+              <Stack.Screen name="MainStackNavigator" component={MainStackNavigator} />
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthProvider>
     </PaperProvider>
   );
 }
