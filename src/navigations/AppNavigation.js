@@ -8,14 +8,17 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 // firebase
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../utils/firebase';
 // components
 import Iconify from 'react-native-iconify';
 // Screens
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
 import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
-import HomeScreen from '../screens/Home/DonatorHomeScreen';
+import DonatorHomeScreen from '../screens/Home/DonatorHomeScreen';
+import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
+import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen'; // Updated: Ensure correct path
 import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; // Updated: Ensure correct path
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
@@ -54,14 +57,14 @@ const MainStackNavigator = () => (
   </Stack.Navigator>
 );
 
-const MainTabNavigator = () => (
+const MainTabNavigator = ({ component }) => (
   <Tab.Navigator
     screenOptions={{
       headerShown: false,
     }}>
     <Tab.Screen
       name="Home"
-      component={HomeScreen}
+      component={component}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Iconify icon="mdi:home" size={size || 24} color={color || "#900"} />
@@ -93,11 +96,21 @@ const MainTabNavigator = () => (
 
 export default function AppContainer() {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [initializing, setInitializing] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = doc(firestore, 'users', user.uid);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          setUserRole(docSnap.data().UserRole);
+        } else {
+          console.log("No such document!");
+        }
+      }
+
       setUser(user);
       if (initializing) setInitializing(false);
     });
@@ -115,7 +128,18 @@ export default function AppContainer() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             {user ? (
-              <Stack.Screen name="MainTabNavigator" component={MainTabNavigator} />
+              <Stack.Screen name="MainTabNavigator">
+                {() => {
+                  if (userRole === 'Donator') {
+                    return <MainTabNavigator component={DonatorHomeScreen} />;
+                  } else if (userRole === 'Receiver') {
+                    return <MainTabNavigator component={ReceiverHomeScreen} />;
+                  } else if (userRole === 'Rider') {
+                    return <MainTabNavigator component={RiderHomeScreen} />;
+                  }
+                  return <DonatorHomeScreen />; // Default fallback
+                }}
+              </Stack.Screen>
             ) : (
               <Stack.Screen name="MainStackNavigator" component={MainStackNavigator} />
             )}

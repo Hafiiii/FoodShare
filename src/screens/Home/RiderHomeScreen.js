@@ -37,7 +37,7 @@ export default function HomeScreen(props) {
 
   return (
     <View>
-        <Text style={styles.title}>RIDER PAGE</Text>
+        <Text style={{fontSize: 40}}>RIDER PAGE</Text>
       {/* <FlatList vertical showsVerticalScrollIndicator={false} numColumns={2} data={recipes} renderItem={renderRecipes} keyExtractor={(item) => `${item.recipeId}`} /> */}
     </View>
   );
