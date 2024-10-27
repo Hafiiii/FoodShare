@@ -55,7 +55,6 @@ export default function AuthRegisterForm() {
                 UserEmailAddress: email,
                 UserRole: role,
                 CreatedAt: new Date(),
-                Verified: false,
             });
 
             Toast.show({
