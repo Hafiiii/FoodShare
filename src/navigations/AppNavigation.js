@@ -19,6 +19,7 @@ import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
 import DonatorHomeScreen from '../screens/Home/DonatorHomeScreen';
 import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
 import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
+import AddNewItemScreen from '../screens/AddItem/AddNewItemScreen';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen'; 
 import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; 
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
@@ -91,6 +92,13 @@ const MainTabNavigator = ({ component }) => (
   </Tab.Navigator>
 );
 
+const DonatorStackNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="DonatorHome" component={DonatorHomeScreen} />
+    <Stack.Screen name="AddNewItem" component={AddNewItemScreen} />
+  </Stack.Navigator>
+);
+
 const RiderStackNavigator = () => (
   <Stack.Navigator>
     <Stack.Screen name="RiderHome" component={RiderHomeScreen} />
@@ -131,7 +139,7 @@ export default function AppContainer() {
           <Stack.Screen name="MainTabNavigator">
             {() => {
               if (userRole === 'Donator') {
-                return <MainTabNavigator component={DonatorHomeScreen} />;
+                return <MainTabNavigator component={DonatorStackNavigator} />;
               } else if (userRole === 'Receiver') {
                 return <MainTabNavigator component={ReceiverHomeScreen} />;
               } else if (userRole === 'Rider') {
