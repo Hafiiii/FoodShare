@@ -19,12 +19,11 @@ import ResetPasswordScreen from '../screens/ResetPassword/ResetPasswordScreen';
 import DonatorHomeScreen from '../screens/Home/DonatorHomeScreen';
 import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
 import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
-import CategoriesScreen from '../screens/Categories/CategoriesScreen'; // Updated: Ensure correct path
-import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; // Updated: Ensure correct path
+import CategoriesScreen from '../screens/Categories/CategoriesScreen'; 
+import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; 
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-// import BookingPlannerScreen from '../screens/BookingPlanner/BookingPlannerScreen';
-
+import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
 // ----------------------------------------------------------------------
 
 const theme = {
@@ -71,7 +70,6 @@ const MainTabNavigator = ({ component }) => (
         ),
       }}
     />
-    {/* Updated: Use the CategoriesStackNavigator to handle navigation between Categories and CategoryDetail */}
     <Tab.Screen
       name="Location"
       component={CategoriesStackNavigator}
@@ -90,8 +88,14 @@ const MainTabNavigator = ({ component }) => (
         ),
       }}
     />
-    {/* <Tab.Screen name="RecipesList" component={RecipesListScreen} /> */}
   </Tab.Navigator>
+);
+
+const RiderStackNavigator = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="RiderHome" component={RiderHomeScreen} />
+    <Stack.Screen name="BookingDetailScreen" component={BookingDetailScreen} />
+  </Stack.Navigator>
 );
 
 export default function AppContainer() {
@@ -131,7 +135,7 @@ export default function AppContainer() {
               } else if (userRole === 'Receiver') {
                 return <MainTabNavigator component={ReceiverHomeScreen} />;
               } else if (userRole === 'Rider') {
-                return <MainTabNavigator component={RiderHomeScreen} />;
+                return <MainTabNavigator component={RiderStackNavigator} />;
               }
               return <ReceiverHomeScreen />;
             }}
