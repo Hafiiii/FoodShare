@@ -20,6 +20,7 @@ import DonatorHomeScreen from '../screens/Home/DonatorHomeScreen';
 import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
 import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
 import AddNewItemScreen from '../screens/AddItem/AddNewItemScreen';
+import DonatorHSDetail from '../screens/HomeDetail/DonatorHSDetail';
 import CategoriesScreen from '../screens/Categories/CategoriesScreen'; 
 import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; 
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
@@ -96,6 +97,7 @@ const DonatorStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DonatorHome" component={DonatorHomeScreen} />
     <Stack.Screen name="AddNewItem" component={AddNewItemScreen} />
+    <Stack.Screen name="DonatorHSDetail" component={DonatorHSDetail} />
   </Stack.Navigator>
 );
 

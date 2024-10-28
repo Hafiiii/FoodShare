@@ -40,7 +40,7 @@ export default function DonatorHomeScreen({ navigation }) {
   }, [navigation]);
 
   const onPressRecipe = (item) => {
-    navigation.navigate("Recipe", { item });
+    navigation.navigate("DonatorHSDetail", { item });
   };
 
   const onPressAddNew = () => {

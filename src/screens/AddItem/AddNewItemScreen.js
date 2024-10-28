@@ -10,6 +10,7 @@ import Toast from 'react-native-toast-message';
 export default function AddNewItemScreen({ navigation }) {
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
+  const [location, setLocation] = useState('');
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const storage = getStorage();
@@ -36,11 +37,11 @@ export default function AddNewItemScreen({ navigation }) {
     const user = auth.currentUser;
     if (!user) return;
 
-    if (!itemName || !description) {
+    if (!itemName || !description || !location) {
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Item name and description are required.',
+        text2: 'Item name, description and location are required.',
       });
       return;
     }
@@ -60,6 +61,7 @@ export default function AddNewItemScreen({ navigation }) {
       await addDoc(collection(firestore, "items"), {
         itemName,
         description,
+        location,
         donatorId: user.uid,
         imageUrl: uploadedImageUrl,
         timestamp: new Date(),
@@ -74,6 +76,7 @@ export default function AddNewItemScreen({ navigation }) {
       // Reset form fields
       setItemName('');
       setDescription('');
+      setLocation('');
       setImage(null);
       navigation.goBack();
     } catch (error) {
@@ -104,6 +107,14 @@ export default function AddNewItemScreen({ navigation }) {
       placeholder="Description"
       value={description}
       onChangeText={setDescription}
+      multiline
+    />
+
+  <TextInput
+      style={styles.input}
+      placeholder="Location"
+      value={location}
+      onChangeText={setLocation}
       multiline
     />
     
