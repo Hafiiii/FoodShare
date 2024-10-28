@@ -2,6 +2,7 @@ import AppNavigation from './src/navigations/AppNavigation';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 // context
 import { AuthProvider } from './src/context/AuthContext';
+// components
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from './src/theme';
 

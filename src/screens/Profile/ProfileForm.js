@@ -132,9 +132,7 @@ export default function ProfileForm() {
     }, []);
 
     return (
-        <View style={{ padding: 20, margin: 10 }}>
-            <Text style={{ fontSize: 24, fontWeight: 800, marginBottom: 10 }}>Profile</Text>
-
+        <View style={{ padding: 20 }}>
             <TextInput
                 label="First Name"
                 value={FirstName}

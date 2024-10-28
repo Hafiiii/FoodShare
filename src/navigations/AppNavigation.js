@@ -21,10 +21,11 @@ import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
 import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
 import AddNewItemScreen from '../screens/AddItem/AddNewItemScreen';
 import DonatorHSDetail from '../screens/HomeDetail/DonatorHSDetail';
-import CategoriesScreen from '../screens/Categories/CategoriesScreen'; 
-import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails'; 
+import CategoriesScreen from '../screens/Categories/CategoriesScreen';
+import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails';
 import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import FeedbackScreen from '../screens/Feedback/FeedbackScreen';
 import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
 // ----------------------------------------------------------------------
 
@@ -40,29 +41,29 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const CategoriesStackNavigator = () => (
-  <Stack.Navigator>
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Categories" component={CategoriesScreen} />
     <Stack.Screen name="CategoriesScreenDetail" component={CategoriesScreenDetails} />
   </Stack.Navigator>
 );
 
 const MainStackNavigator = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}
-  >
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Login" component={LoginScreen} />
     <Stack.Screen name="Register" component={RegisterScreen} />
     <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
   </Stack.Navigator>
 );
 
+const ProfileStackNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+    <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
+  </Stack.Navigator>
+);
+
 const MainTabNavigator = ({ component }) => (
-  <Tab.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}>
+  <Tab.Navigator screenOptions={{ headerShown: false }}>
     <Tab.Screen
       name="Home"
       component={component}
@@ -83,7 +84,7 @@ const MainTabNavigator = ({ component }) => (
     />
     <Tab.Screen
       name="Profile"
-      component={ProfileScreen}
+      component={ProfileStackNavigator}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Iconify icon="mdi:account" size={size || 24} color={color || "#900"} />
@@ -102,7 +103,7 @@ const DonatorStackNavigator = () => (
 );
 
 const RiderStackNavigator = () => (
-  <Stack.Navigator>
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="RiderHome" component={RiderHomeScreen} />
     <Stack.Screen name="BookingDetailScreen" component={BookingDetailScreen} />
   </Stack.Navigator>
