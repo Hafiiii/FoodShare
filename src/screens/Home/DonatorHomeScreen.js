@@ -2,7 +2,6 @@ import { useLayoutEffect, useState, useEffect } from "react";
 import { FlatList, Text, View, TouchableHighlight, Image, ActivityIndicator } from "react-native";
 import styles from "./styles"; // Ensure styles are defined
 import MenuImage from "../../components/MenuImage/MenuImage"; // Adjust path as necessary
-import { getCategoryName } from "../../data/MockDataAPI"; // Adjust path as necessary
 import { Ionicons } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase'; // Adjust the path as necessary
@@ -50,12 +49,17 @@ export default function DonatorHomeScreen({ navigation }) {
   const renderRecipes = ({ item }) => (
     <TouchableHighlight underlayColor="rgba(73,182,77,0.9)" onPress={() => onPressRecipe(item)}>
       <View style={styles.container}>
-        <Image style={styles.photo} source={{ uri: item.image }} />
+        {item.imageUrl ? ( // Check if imageUrl exists
+          <Image style={styles.photo} source={{ uri: item.imageUrl }} />
+        ) : (
+          <Image style={styles.photo} source={require("../../../assets/icons/heart.png")} />
+        )}
         <Text style={styles.title}>{item.itemName}</Text>
         <Text style={styles.infoText}>{item.description}</Text>
       </View>
     </TouchableHighlight>
   );
+
 
   if (loading) {
     return (
@@ -68,8 +72,8 @@ export default function DonatorHomeScreen({ navigation }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.headerText}>Donator Home</Text>
-      
-      <TouchableHighlight 
+
+      <TouchableHighlight
         style={styles.addCard}
         underlayColor="rgba(73,182,77,0.9)"
         onPress={onPressAddNew}
@@ -79,7 +83,7 @@ export default function DonatorHomeScreen({ navigation }) {
           <Text style={styles.addCardText}>Add New Item</Text>
         </View>
       </TouchableHighlight>
-      
+
       <FlatList
         vertical
         showsVerticalScrollIndicator={false}
