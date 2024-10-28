@@ -1,31 +1,39 @@
 import { useLayoutEffect, useState, useEffect } from "react";
 import { FlatList, Text, View, TouchableHighlight, Image, ActivityIndicator } from "react-native";
-import styles from "./styles";
-import { recipes } from "../../data/dataArrays";
-import MenuImage from "../../components/MenuImage/MenuImage";
-import { getCategoryName } from "../../data/MockDataAPI";
+import styles from "./styles"; // Ensure styles are defined
+import MenuImage from "../../components/MenuImage/MenuImage"; // Adjust path as necessary
+import { getCategoryName } from "../../data/MockDataAPI"; // Adjust path as necessary
 import { Ionicons } from '@expo/vector-icons';
+import { collection, getDocs } from 'firebase/firestore';
+import { firestore } from '../../utils/firebase'; // Adjust the path as necessary
 
-export default function DonatorHomeScreen(props) {
-  const { navigation } = props;
+export default function DonatorHomeScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [recipeData, setRecipeData] = useState([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setRecipeData(recipes);
-      setLoading(false);
-    }, 1000);
+    const fetchRecipes = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestore, "items")); // Change "items" to your collection name
+        const items = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRecipeData(items);
+      } catch (error) {
+        console.error("Error fetching recipes: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipes();
   }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <MenuImage
-          onPress={() => {
-            navigation.openDrawer();
-          }}
-        />
+        <MenuImage onPress={() => navigation.openDrawer()} />
       ),
       headerRight: () => <View />,
     });
@@ -42,8 +50,8 @@ export default function DonatorHomeScreen(props) {
   const renderRecipes = ({ item }) => (
     <TouchableHighlight underlayColor="rgba(73,182,77,0.9)" onPress={() => onPressRecipe(item)}>
       <View style={styles.container}>
-        <Image style={styles.photo} source={{ uri: item.photo_url }} />
-        <Text style={styles.title}>{item.title}</Text>
+        <Image style={styles.photo} source={{ uri: item.imageUrl }} />
+        <Text style={styles.title}>{item.itemName}</Text>
         <Text style={styles.category}>{getCategoryName(item.categoryId)}</Text>
       </View>
     </TouchableHighlight>
@@ -59,7 +67,6 @@ export default function DonatorHomeScreen(props) {
 
   return (
     <View style={styles.screen}>
-      {/* Header Text */}
       <Text style={styles.headerText}>Donator Home</Text>
       
       <TouchableHighlight 
@@ -68,7 +75,7 @@ export default function DonatorHomeScreen(props) {
         onPress={onPressAddNew}
       >
         <View style={styles.addCardContainer}>
-          <Ionicons name="add-circle" size={70} color="green" style={styles.addIcon} />
+          <Ionicons name="add-circle" size={50} color="green" style={styles.addIcon} />
           <Text style={styles.addCardText}>Add New Item</Text>
         </View>
       </TouchableHighlight>
@@ -79,7 +86,8 @@ export default function DonatorHomeScreen(props) {
         numColumns={2}
         data={recipeData}
         renderItem={renderRecipes}
-        keyExtractor={(item) => `${item.recipeId}`}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContainer} // Added style for the FlatList content
       />
     </View>
   );
