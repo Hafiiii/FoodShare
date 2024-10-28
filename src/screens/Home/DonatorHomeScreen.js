@@ -50,9 +50,9 @@ export default function DonatorHomeScreen({ navigation }) {
   const renderRecipes = ({ item }) => (
     <TouchableHighlight underlayColor="rgba(73,182,77,0.9)" onPress={() => onPressRecipe(item)}>
       <View style={styles.container}>
-        <Image style={styles.photo} source={{ uri: item.imageUrl }} />
+        <Image style={styles.photo} source={{ uri: item.image }} />
         <Text style={styles.title}>{item.itemName}</Text>
-        <Text style={styles.category}>{getCategoryName(item.categoryId)}</Text>
+        <Text style={styles.infoText}>{item.description}</Text>
       </View>
     </TouchableHighlight>
   );

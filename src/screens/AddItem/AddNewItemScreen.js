@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
 import { addDoc, collection } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { auth, firestore } from '../../utils/firebase';
@@ -89,29 +90,52 @@ export default function AddNewItemScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add New Item</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Item Name"
-        value={itemName}
-        onChangeText={setItemName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-        multiline
-      />
-      <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-        <Text>{image ? 'Change Image' : 'Select an Image'}</Text>
-      </TouchableOpacity>
-      {image && (
-        <Image source={{ uri: image }} style={styles.image} />
-      )}
-      <Button title="Confirm" onPress={handleConfirm} disabled={loading} />
-      <Button title="Go Back" onPress={() => navigation.goBack()} />
+    <Text style={styles.title}>Add New Item</Text>
+    
+    <TextInput
+      style={styles.input}
+      placeholder="Item Name"
+      value={itemName}
+      onChangeText={setItemName}
+    />
+    
+    <TextInput
+      style={styles.input}
+      placeholder="Description"
+      value={description}
+      onChangeText={setDescription}
+      multiline
+    />
+    
+    <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
+      <Text>{image ? 'Change Image' : 'Select an Image'}</Text>
+    </TouchableOpacity>
+    
+    {image && (
+      <Image source={{ uri: image }} style={styles.image} />
+    )}
+    
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+      <Button
+        title="Confirm"
+        mode="contained"
+        onPress={handleConfirm}
+        disabled={loading}
+        style={{ flex: 1, marginRight: 10 }}
+      >
+        Confirm
+      </Button>
+      
+      <Button
+        title="Back"
+        mode="outlined"
+        onPress={() => navigation.goBack()}
+        style={{ flex: 1, marginLeft: 10 }}
+      >
+        Back
+      </Button>
     </View>
+  </View>
   );
 }
 
@@ -127,6 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'right', 
   },
   input: {
     width: '100%',
