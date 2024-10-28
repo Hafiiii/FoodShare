@@ -40,6 +40,14 @@ const styles = StyleSheet.create({
     color: "#4CAF50", // Matching primary theme color
   },
   
+  container: {
+    flex: 1,
+    margin: 9,
+    padding: 6,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    elevation: 5,
+  },
 });
 
 export default styles;
