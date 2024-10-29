@@ -154,126 +154,151 @@ export default function ReceiverHomeScreen() {
     navigation.navigate('ReceiverItemDetails', { item });
   };
 
+  const navigateToProfile = () => {
+    navigation.navigate('ProfileHome');
+  };
+
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View
-        style={{
-          marginTop: 25,
-          paddingHorizontal: 34,
-          paddingBottom: 60,
-          paddingVertical: 30,
-          backgroundColor: palette.primary.main,
-          borderBottomLeftRadius: 40,
-          borderBottomRightRadius: 40,
-          elevation: 8,
-        }}
-      >
-        {userProfile.firstName ? (
-          <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
-            Hi, {userProfile.firstName} {userProfile.lastName}
-          </Text>
-        ) : (
-          <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
-            Hi, {userProfile.email}
-          </Text>
-        )}
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'column' }}>
-            <Text style={{ fontSize: 24, color: 'white' }}>
-              Your <Text style={{ fontWeight: '800', fontSize: 25, color: 'white' }}>Next Meal</Text> is
+    <>
+      <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <View
+          style={{
+            marginTop: 25,
+            paddingHorizontal: 34,
+            paddingBottom: 60,
+            paddingVertical: 30,
+            backgroundColor: palette.primary.main,
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            elevation: 8,
+          }}
+        >
+          {userProfile.firstName ? (
+            <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
+              Hi, {userProfile.firstName} {userProfile.lastName}
             </Text>
-            <Text style={{ fontSize: 24, color: 'white' }}>
-              Just a <Text style={{ fontWeight: 'bold', fontSize: 25, color: 'white' }}>Tap Away </Text>
-            </Text>
-          </View>
-          <Icon name='food' size={60} color="white" />
-        </View>
-      </View>
-
-      {/* Display tabs of locations as filtering */}
-      <View style={{ marginTop: 30, marginLeft: 15 }}>
-        <Text style={{ fontSize: 18, fontWeight: '800' }}>Locations</Text>
-        <LocationTab
-          locations={locations}
-          selectedLocation={selectedLocation}
-          handleLocationChange={handleLocationChange}
-        />
-      </View>
-
-      <View style={{ padding: 16 }}>
-        <Searchbar
-          placeholder="Search"
-          onChangeText={handleSearch}
-          value={searchQuery}
-          style={{ marginBottom: 16 }}
-        />
-
-        <View style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-        }}>
-          {filteredData.length > 0 ? (
-            filteredData.map((item) => (
-              <View key={item.id} style={{ width: `${100 / SCREEN_WIDTH}%`, padding: 8 }}>
-                <TouchableOpacity onPress={() => navigateToDetails(item)}>
-                  <Card style={{
-                    padding: 8,
-                    elevation: 2,
-                    borderRadius: 18,
-                    backgroundColor: '#fff',
-                  }}>
-                    <View style={{ flexDirection: 'column' }}>
-                      {item.imageUrl ? (
-                        <Image
-                          style={{
-                            width: `${200 / SCREEN_WIDTH}%`,
-                            height: 120,
-                            borderRadius: 16,
-                          }}
-                          source={{ uri: item.imageUrl }}
-                          resizeMode="cover"
-                          onError={() => console.log("Failed to load image: ", item.imageUrl)}
-                        />
-                      ) : (
-                        <Image
-                          style={{
-                            width: '100%',
-                            height: 120,
-                            borderTopLeftRadius: 8,
-                            borderTopRightRadius: 8,
-                          }}
-                          source={require("../../../assets/icons/heart.png")}
-                          resizeMode="cover"
-                        />
-                      )}
-                      <View style={{ padding: 10, paddingVertical: 6 }}>
-                        <Text style={{ fontSize: 16, fontWeight: '800', paddingLeft: 3 }}>{item.itemName}</Text>
-                        <Text
-                          style={{
-                            fontSize: 12,
-                            backgroundColor: palette.primary.light,
-                            paddingHorizontal: 5,
-                            paddingVertical: 3,
-                            borderRadius: 5,
-                            marginVertical: 7,
-                            alignSelf: 'flex-start',
-                          }}
-                        >
-                          {item.label}
-                        </Text>
-                      </View>
-                    </View>
-                  </Card>
-                </TouchableOpacity>
-              </View>
-            ))
           ) : (
-            <Text>No items found for the selected location.</Text>
+            <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
+              Hi, {userProfile.email}
+            </Text>
           )}
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={{ fontSize: 24, color: 'white' }}>
+                Your <Text style={{ fontWeight: '800', fontSize: 25, color: 'white' }}>Next Meal</Text> is
+              </Text>
+              <Text style={{ fontSize: 24, color: 'white' }}>
+                Just a <Text style={{ fontWeight: 'bold', fontSize: 25, color: 'white' }}>Tap Away </Text>
+              </Text>
+            </View>
+            <Icon name='food' size={60} color="white" />
+          </View>
         </View>
-      </View>
-    </ScrollView>
+
+        {/* Display tabs of locations as filtering */}
+        <View style={{ marginTop: 30, marginLeft: 15 }}>
+          <Text style={{ fontSize: 18, fontWeight: '800' }}>Locations</Text>
+          <LocationTab
+            locations={locations}
+            selectedLocation={selectedLocation}
+            handleLocationChange={handleLocationChange}
+          />
+        </View>
+
+        <View style={{ padding: 16 }}>
+          <Searchbar
+            placeholder="Search"
+            onChangeText={handleSearch}
+            value={searchQuery}
+            style={{ marginBottom: 16 }}
+          />
+
+          <View style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+          }}>
+            {filteredData.length > 0 ? (
+              filteredData.map((item) => (
+                <View key={item.id} style={{ width: `${100 / SCREEN_WIDTH}%`, padding: 8 }}>
+                  <TouchableOpacity onPress={() => navigateToDetails(item)}>
+                    <Card style={{
+                      padding: 8,
+                      elevation: 2,
+                      borderRadius: 18,
+                      backgroundColor: '#fff',
+                    }}>
+                      <View style={{ flexDirection: 'column' }}>
+                        {item.imageUrl ? (
+                          <Image
+                            style={{
+                              width: `${200 / SCREEN_WIDTH}%`,
+                              height: 120,
+                              borderRadius: 16,
+                            }}
+                            source={{ uri: item.imageUrl }}
+                            resizeMode="cover"
+                            onError={() => console.log("Failed to load image: ", item.imageUrl)}
+                          />
+                        ) : (
+                          <Image
+                            style={{
+                              width: '100%',
+                              height: 120,
+                              borderTopLeftRadius: 8,
+                              borderTopRightRadius: 8,
+                            }}
+                            source={require("../../../assets/icons/heart.png")}
+                            resizeMode="cover"
+                          />
+                        )}
+                        <View style={{ padding: 10, paddingVertical: 6 }}>
+                          <Text style={{ fontSize: 16, fontWeight: '800', paddingLeft: 3 }}>{item.itemName}</Text>
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              backgroundColor: palette.primary.light,
+                              paddingHorizontal: 5,
+                              paddingVertical: 3,
+                              borderRadius: 5,
+                              marginVertical: 7,
+                              alignSelf: 'flex-start',
+                            }}
+                          >
+                            {item.label}
+                          </Text>
+                        </View>
+                      </View>
+                    </Card>
+                  </TouchableOpacity>
+                </View>
+              ))
+            ) : (
+              <Text>No items found for the selected location.</Text>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Floating Button */}
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          width: 46,
+          height: 46,
+          borderRadius: 30,
+          backgroundColor: palette.primary.main,
+          alignItems: 'center',
+          justifyContent: 'center',
+          elevation: 5,
+        }}
+        onPress={navigateToProfile}
+      >
+        <Icon name="account" size={28} color="#fff" />
+      </TouchableOpacity>
+    </>
   );
 }

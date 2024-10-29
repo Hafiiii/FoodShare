@@ -4,14 +4,15 @@ import { Text } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 // components
 import ProfileForm from './ProfileForm';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icons from 'react-native-vector-icons/MaterialIcons';
 import palette from '../../theme/palette';
 
 // ----------------------------------------------------------------------
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
-  
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -23,10 +24,17 @@ export default function ProfileScreen() {
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ fontSize: 24, fontWeight: 800 }}>Profile</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
+          </TouchableOpacity>
+
+          <Text style={{ fontSize: 24, fontWeight: 800 }}>Profile</Text>
+        </View>
+
 
         <TouchableOpacity onPress={() => navigation.navigate('FeedbackHome')}>
-          <Icon name="feedback" size={24} color={palette.primary.main} />
+          <Icons name="feedback" size={24} color={palette.primary.main} />
         </TouchableOpacity>
       </View>
 

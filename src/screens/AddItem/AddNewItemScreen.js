@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
@@ -155,7 +155,7 @@ export default function AddNewItemScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Add New Item</Text>
 
       <TextInput
@@ -226,7 +226,7 @@ export default function AddNewItemScreen({ navigation }) {
           Back
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 

@@ -4,11 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 const RiderHomeScreen = () => {
   const navigation = useNavigation();
-  const [orders, setOrders] = useState([]); 
+  const [orders, setOrders] = useState([]);
   const [reservedOrders, setReservedOrders] = useState({}); // Track reserved orders
   // const [orderLocations, setOrderLocations] = useState({}); // Store both donator and receiver locations in string
   // const [addresses, setAddresses] = useState({}); // Keep track of addresses for each order
@@ -95,17 +96,17 @@ const RiderHomeScreen = () => {
   }, [orders]);
 */
 
-const renderOrder = ({ item }) => {
-  // If the order is reserved, apply the reserved styling, otherwise use the default style
-  const isReserved = reservedOrders[item.id]; // Check if order is reserved
-  const containerStyle = isReserved ? [styles.orderContainer, styles.reservedContainer] : styles.orderContainer;
+  const renderOrder = ({ item }) => {
+    // If the order is reserved, apply the reserved styling, otherwise use the default style
+    const isReserved = reservedOrders[item.id]; // Check if order is reserved
+    const containerStyle = isReserved ? [styles.orderContainer, styles.reservedContainer] : styles.orderContainer;
 
     return (
       <TouchableOpacity
-      onPress={() => {
-        navigation.navigate('BookingDetailScreen', { orderId: item.id });
-        setReservedOrders((prev) => ({ ...prev, [item.id]: true })); // Update state here instead of passing as param
-      }}
+        onPress={() => {
+          navigation.navigate('BookingDetailScreen', { orderId: item.id });
+          setReservedOrders((prev) => ({ ...prev, [item.id]: true })); // Update state here instead of passing as param
+        }}
       >
 
         <View style={containerStyle}>
@@ -118,26 +119,51 @@ const renderOrder = ({ item }) => {
     );
   };
 
+  const navigateToProfile = () => {
+    navigation.navigate('ProfileHome');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Booking Planner</Text>
-      <FlatList
-        data={orders}
-        renderItem={renderOrder}
-        keyExtractor={(item) => item.id.toString()}
-      />
-    </View>
+    <>
+      <View style={styles.container}>
+        <Text style={styles.title}>Booking Planner</Text>
+        <FlatList
+          data={orders}
+          renderItem={renderOrder}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
+
+      {/* Floating Button */}
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          width: 46,
+          height: 46,
+          borderRadius: 30,
+          backgroundColor: palette.primary.main,
+          alignItems: 'center',
+          justifyContent: 'center',
+          elevation: 5,
+        }}
+        onPress={navigateToProfile}
+      >
+        <Icon name="account" size={28} color="#fff" />
+      </TouchableOpacity>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20},
+  container: { flex: 1, padding: 20 },
   title: { fontSize: 30, fontWeight: 'bold', marginTop: 40, marginBottom: 10 },
-    orderContainer: { 
-    marginBottom: 10, 
-    padding: 15, 
-    backgroundColor: '#D4D4D4', 
-    borderRadius: 8 
+  orderContainer: {
+    marginBottom: 10,
+    padding: 15,
+    backgroundColor: '#D4D4D4',
+    borderRadius: 8
   },
   reservedContainer: { backgroundColor: '#A8D5BA' }, // Highlight reserved orders in green
   foodShareShift: { fontSize: 18, fontWeight: 'bold' },

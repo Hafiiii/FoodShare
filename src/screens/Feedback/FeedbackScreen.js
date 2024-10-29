@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { TextInput, Button, Text, Switch } from 'react-native-paper';
+// @react-navigation
+import { useNavigation } from '@react-navigation/native';
 // form
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -12,6 +14,7 @@ import { auth, firestore } from '../../utils/firebase';
 import Toast from 'react-native-toast-message';
 import StarRating from './StarRating';
 import palette from '../../theme/palette';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +29,7 @@ const FeedbackSchema = Yup.object().shape({
 // ----------------------------------------------------------------------
 
 export default function FeedbackForm() {
+    const navigation = useNavigation();
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [rating, setRating] = useState(0);
@@ -118,6 +122,10 @@ export default function FeedbackForm() {
 
     return (
         <ScrollView style={{ padding: 30, marginTop: 60 }}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
+          </TouchableOpacity>
+
             <View style={{ alignItems: 'center', marginBottom: 15 }}>
                 <Image
                     source={require("../../../assets/icons/light.png")}

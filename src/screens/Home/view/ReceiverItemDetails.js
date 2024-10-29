@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Button } from 'react-native-paper';
 import MapView, { Marker } from 'react-native-maps';
+// @react-navigation
+import { useNavigation } from '@react-navigation/native';
 // @react-navigation
 import { useRoute } from '@react-navigation/native';
 // firebase
@@ -15,6 +17,7 @@ import palette from '../../../theme/palette';
 // ----------------------------------------------------------------------
 
 export default function ReceiverItemDetails() {
+  const navigation = useNavigation();
   const route = useRoute();
   const { item } = route.params;
   const [address, setAddress] = useState('');
@@ -103,6 +106,10 @@ export default function ReceiverItemDetails() {
             borderTopRightRadius: 56,
           }}
         >
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5, marginBottom: 5 }} />
+          </TouchableOpacity>
+
           <Text style={{ fontSize: 19, fontWeight: '700' }}>
             {item.itemName}
           </Text>

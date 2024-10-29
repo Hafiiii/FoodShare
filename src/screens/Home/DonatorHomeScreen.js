@@ -3,6 +3,7 @@ import { FlatList, Text, View, TouchableHighlight, Image, ActivityIndicator } fr
 import styles from "./styles"; // Ensure styles are defined
 import MenuImage from "../../components/MenuImage/MenuImage"; // Adjust path as necessary
 import { Ionicons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase'; // Adjust the path as necessary
 
@@ -69,30 +70,55 @@ export default function DonatorHomeScreen({ navigation }) {
     );
   }
 
+  const navigateToProfile = () => {
+    navigation.navigate('ProfileHome');
+  };
+
   return (
-    <View style={styles.screen}>
-      <Text style={styles.headerText}>Donator Home</Text>
+    <>
+      <View style={styles.screen}>
+        <Text style={styles.headerText}>Donator Home</Text>
 
-      <TouchableHighlight
-        style={styles.addCard}
-        underlayColor="rgba(73,182,77,0.9)"
-        onPress={onPressAddNew}
+        <TouchableHighlight
+          style={styles.addCard}
+          underlayColor="rgba(73,182,77,0.9)"
+          onPress={onPressAddNew}
+        >
+          <View style={styles.addCardContainer}>
+            <Ionicons name="add-circle" size={50} color="green" style={styles.addIcon} />
+            <Text style={styles.addCardText}>Add New Item</Text>
+          </View>
+        </TouchableHighlight>
+
+        <FlatList
+          vertical
+          showsVerticalScrollIndicator={false}
+          numColumns={2}
+          data={recipeData}
+          renderItem={renderRecipes}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContainer} // Added style for the FlatList content
+        />
+      </View>
+
+      {/* Floating Button */}
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          right: 30,
+          width: 46,
+          height: 46,
+          borderRadius: 30,
+          backgroundColor: palette.primary.main,
+          alignItems: 'center',
+          justifyContent: 'center',
+          elevation: 5,
+        }}
+        onPress={navigateToProfile}
       >
-        <View style={styles.addCardContainer}>
-          <Ionicons name="add-circle" size={50} color="green" style={styles.addIcon} />
-          <Text style={styles.addCardText}>Add New Item</Text>
-        </View>
-      </TouchableHighlight>
-
-      <FlatList
-        vertical
-        showsVerticalScrollIndicator={false}
-        numColumns={2}
-        data={recipeData}
-        renderItem={renderRecipes}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer} // Added style for the FlatList content
-      />
-    </View>
+        <Icon name="account" size={28} color="#fff" />
+      </TouchableOpacity>
+    </>
   );
 }

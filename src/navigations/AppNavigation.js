@@ -1,17 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 // @react-navigation
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // context
-import { AuthProvider, useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 // firebase
-import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, firestore } from '../utils/firebase';
-// components
-import Iconify from 'react-native-iconify';
+import { firestore } from '../utils/firebase';
 // Screens
 import LoginScreen from '../screens/Login/LoginScreen';
 import RegisterScreen from '../screens/Register/RegisterScreen';
@@ -21,9 +16,6 @@ import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
 import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
 import AddNewItemScreen from '../screens/AddItem/AddNewItemScreen';
 import DonatorHSDetail from '../screens/HomeDetail/DonatorHSDetail';
-import CategoriesScreen from '../screens/Categories/CategoriesScreen';
-import CategoriesScreenDetails from '../screens/CategoriesScreenDetails/CategoriesScreenDetails';
-import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FeedbackScreen from '../screens/Feedback/FeedbackScreen';
 import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
@@ -32,14 +24,6 @@ import ReceiverItemDetails from '../screens/Home/view/ReceiverItemDetails';
 // ----------------------------------------------------------------------
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-
-const CategoriesStackNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="Categories" component={CategoriesScreen} />
-    <Stack.Screen name="CategoriesScreenDetail" component={CategoriesScreenDetails} />
-  </Stack.Navigator>
-);
 
 const MainStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -49,50 +33,13 @@ const MainStackNavigator = () => (
   </Stack.Navigator>
 );
 
-const ProfileStackNavigator = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
-    <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
-  </Stack.Navigator>
-);
-
-const MainTabNavigator = ({ component }) => (
-  <Tab.Navigator screenOptions={{ headerShown: false }}>
-    <Tab.Screen
-      name="Home"
-      component={component}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Iconify icon="mdi:home" size={size || 24} color={color || "#900"} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="Location"
-      component={CategoriesStackNavigator}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Iconify icon="mdi:heart" size={size || 24} color={color || "#900"} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="Profile"
-      component={ProfileStackNavigator}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Iconify icon="mdi:account" size={size || 24} color={color || "#900"} />
-        ),
-      }}
-    />
-  </Tab.Navigator>
-);
-
 const DonatorStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DonatorHome" component={DonatorHomeScreen} />
     <Stack.Screen name="AddNewItem" component={AddNewItemScreen} />
     <Stack.Screen name="DonatorHSDetail" component={DonatorHSDetail} />
+    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+    <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
   </Stack.Navigator>
 );
 
@@ -100,6 +47,8 @@ const RiderStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="RiderHome" component={RiderHomeScreen} />
     <Stack.Screen name="BookingDetailScreen" component={BookingDetailScreen} />
+    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+    <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
   </Stack.Navigator>
 );
 
@@ -107,6 +56,8 @@ const ReceiverStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ReceiverHome" component={ReceiverHomeScreen} />
     <Stack.Screen name="ReceiverItemDetails" component={ReceiverItemDetails} />
+    <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+    <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
   </Stack.Navigator>
 );
 
@@ -140,18 +91,11 @@ export default function AppContainer() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user && userRole ? (
-          <Stack.Screen name="MainTabNavigator">
-            {() => {
-              if (userRole === 'Donator') {
-                return <MainTabNavigator component={DonatorStackNavigator} />;
-              } else if (userRole === 'Receiver') {
-                return <MainTabNavigator component={ReceiverStackNavigator} />;
-              } else if (userRole === 'Rider') {
-                return <MainTabNavigator component={RiderStackNavigator} />;
-              }
-              return <ReceiverHomeScreen />;
-            }}
-          </Stack.Screen>
+          <>
+            {userRole === 'Donator' && <Stack.Screen name="DonatorStack" component={DonatorStackNavigator} />}
+            {userRole === 'Receiver' && <Stack.Screen name="ReceiverStack" component={ReceiverStackNavigator} />}
+            {userRole === 'Rider' && <Stack.Screen name="RiderStack" component={RiderStackNavigator} />}
+          </>
         ) : (
           <Stack.Screen name="MainStackNavigator" component={MainStackNavigator} />
         )}
