@@ -8,8 +8,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage, auth, firestore } from '../../utils/firebase';
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
-
-const GOOGLE_API_KEY = 'AIzaSyCRJGqmHnj66TuD0ak44IdsHd7pJZ7kRgw'; // Your Google API Key
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 export default function AddNewItemScreen({ navigation }) {
   const [itemName, setItemName] = useState('');
@@ -56,7 +55,7 @@ export default function AddNewItemScreen({ navigation }) {
   const fetchCoordinates = async (address) => {
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_MAPS_API_KEY}`
       );
       const data = await response.json();
       console.log('Geocoding response:', data); // Log the response for debugging

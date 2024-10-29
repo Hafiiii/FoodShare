@@ -1,112 +1,66 @@
-import { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity, ScrollView } from 'react-native';
 import { Text } from 'react-native-paper';
-import { TabView, TabBar } from 'react-native-tab-view';
-// firebase
-import { collection, getDocs } from 'firebase/firestore';
-import { firestore } from '../../../utils/firebase';
 // components
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import palette from '../../../theme/palette';
 
 // ----------------------------------------------------------------------
 
-export default function LocationTab() {
-    const [index, setIndex] = useState(0);
-    const [locations, setLocations] = useState([]);
-    const [routes, setRoutes] = useState([]);
-
-    const fetchLocations = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(firestore, 'locations'));
-            const fetchedLocations = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                label: doc.data().LocationName || 'Unknown Location',
-            }));
-
-            setLocations(fetchedLocations);
-
-            const locationRoutes = [
-                { key: 'all', title: 'All', icon: 'book-open-outline' },
-                ...fetchedLocations.map(location => ({
-                    key: location.id,
-                    title: location.label,
-                    icon: 'map-marker-outline',
-                })),
-            ];
-
-            setRoutes(locationRoutes);
-        } catch (error) {
-            console.error("Error fetching locations: ", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchLocations();
-    }, []);
-
-    const renderScene = ({ route }) => (
-        <View
-            style={{
-                flex: 1,
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 16,
-            }}
-        >
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{route.title}</Text>
-        </View>
-    );
-
-    const renderTabBar = props => (
-        <TabBar
-            {...props}
-            scrollEnabled
-            style={{ backgroundColor: '#fff' }}
-            indicatorStyle={{ display: 'none' }}
-            pressColor='white'
-            tabStyle={{ width: 'auto' }}
-            renderLabel={({ route, focused }) => (
-                <View
+export default function LocationTab({ locations, selectedLocation, handleLocationChange }) {
+    return (
+        <View style={{ padding: 10 }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <TouchableOpacity
+                    onPress={() => handleLocationChange('All')}
                     style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        borderRadius: 15,
-                        paddingHorizontal: 15,
                         paddingVertical: 20,
-                        margin: 3,
-                        elevation: focused ? 7 : 1,
-                        backgroundColor: focused ? palette.primary.main : '#fff',
+                        paddingHorizontal: 15,
+                        backgroundColor: selectedLocation === 'All' ? palette.primary.main : '#f9f9f9',
+                        elevation: selectedLocation === 'All' ? 3 : 0,
+                        borderRadius: 15,
+                        marginRight: 10,
                     }}
                 >
-                    <Icon name={route.icon} size={20} color={focused ? '#fff' : palette.disabled.main} />
-                    <Text style={{
-                        marginLeft: 4,
-                        fontSize: 14,
-                        color: focused ? '#fff' : palette.disabled.main,
-                        fontWeight: focused ? '700' : '400',
-                    }}>
-                        {route.title}
+                    <Icon
+                        name="book-open-outline"
+                        size={20}
+                        color={selectedLocation === 'All' ? '#fff' : palette.disabled.main}
+                        style={{ marginRight: 5 }}
+                    />
+                    <Text style={{ color: selectedLocation === 'All' ? '#fff' : palette.disabled.main }}>
+                        All
                     </Text>
-                </View>
-            )}
-        />
-    );
+                </TouchableOpacity>
 
-    return (
-        <View style={{ flex: 1 }}>
-            {routes.length > 0 ? (
-                <TabView
-                    navigationState={{ index, routes }}
-                    renderScene={renderScene}
-                    onIndexChange={setIndex}
-                    initialLayout={{ width: 400 }}
-                    renderTabBar={renderTabBar}
-                />
-            ) : (
-                <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading locations...</Text>
-            )}
+                {locations.map((location) => (
+                    <TouchableOpacity
+                        key={location}
+                        onPress={() => handleLocationChange(location)}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingVertical: 20,
+                            paddingHorizontal: 15,
+                            backgroundColor: selectedLocation === location ? palette.primary.main : '#f9f9f9',
+                            elevation: selectedLocation === location ? 3 : 0,
+                            borderRadius: 15,
+                            marginRight: 10,
+                        }}
+                    >
+                        <Icon
+                            name="map-marker-outline"
+                            size={20}
+                            color={selectedLocation === location ? '#fff' : palette.disabled.main}
+                            style={{ marginRight: 5 }}
+                        />
+                        <Text style={{ color: selectedLocation === location ? '#fff' : palette.disabled.main }}>
+                            {location}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
     );
 }

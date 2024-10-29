@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { FlatList } from 'react-native-gesture-handler';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
-
-// const GOOGLE_API_KEY = 'AIzaSyCRJGqmHnj66TuD0ak44IdsHd7pJZ7kRgw'; // Replace with your Google Maps API key
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 const RiderHomeScreen = () => {
   const navigation = useNavigation();
@@ -73,7 +72,7 @@ const RiderHomeScreen = () => {
       const lng = geoPoint.longitude;
       try {
         const response = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
         );
         const data = await response.json();
         if (data.results && data.results.length > 0) {

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { View, ScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { Searchbar, Text, Card } from 'react-native-paper';
+import axios from 'axios';
 // @react-navigation
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 // firebase
 import { doc, collection, getDoc, getDocs } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
@@ -11,6 +12,7 @@ import { auth, firestore, storage } from '../../utils/firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LocationTab from './components/LocationTab';
 import palette from '../../theme/palette';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +27,10 @@ export default function ReceiverHomeScreen() {
   const [filteredData, setFilteredData] = useState([]);
   const [itemData, setItemData] = useState([]);
   const [userProfile, setUserProfile] = useState({ firstName: '', lastName: '', email: '' });
+  const [selectedLocation, setSelectedLocation] = useState('All'); // State for selected location
+  const [locations, setLocations] = useState([]);
 
-  // fetch user data "users" from firestore
+  // Fetch user profile
   const fetchUserProfile = async () => {
     const uid = auth.currentUser?.uid;
 
@@ -49,7 +53,7 @@ export default function ReceiverHomeScreen() {
     }
   };
 
-  // fetch item data "items" from firestore
+  // Fetch item data
   const fetchUserItem = async () => {
     try {
       const querySnapshot = await getDocs(collection(firestore, "items"));
@@ -62,9 +66,25 @@ export default function ReceiverHomeScreen() {
           imageUrl = await getDownloadURL(storageRef);
         }
 
-        return { id: doc.id, ...itemData, imageUrl };
+        const locationData = doc.data().location;
+        let city = 'Unknown Location';
+
+        if (locationData && locationData.latitude && locationData.longitude) {
+          const { latitude, longitude } = locationData;
+          city = await getCityFromCoordinates(latitude, longitude);
+        } else {
+          console.warn("Location data is missing latitude or longitude.");
+        }
+
+        return {
+          id: doc.id,
+          ...itemData,
+          imageUrl,
+          label: city,
+        };
       }));
 
+      setLocations([...new Set(items.map(item => item.label))]);
       setItemData(items);
       setFilteredData(items);
     } catch (error) {
@@ -72,26 +92,64 @@ export default function ReceiverHomeScreen() {
     }
   };
 
-  useEffect(() => {
-    fetchUserProfile();
-    fetchUserItem();
-  }, []);
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    if (query) {
-      const filtered = itemData.filter(item =>
-        (item.itemName && item.itemName.toLowerCase().includes(query.toLowerCase())) ||
-        (item.location && item.location.toLowerCase().includes(query.toLowerCase()))
-        // (item.UserContactNo && item.UserContactNo.includes(query))
+  // Get city name from coordinates
+  const getCityFromCoordinates = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`
       );
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(itemData);
+
+      const addressComponents = response.data.results[0]?.address_components;
+      if (!addressComponents) {
+        console.warn("No address components found for the given coordinates.");
+        return 'Unknown Location';
+      }
+
+      const cityComponent = addressComponents.find(component =>
+        component.types.includes("locality") || component.types.includes("administrative_area_level_1")
+      );
+
+      return cityComponent ? cityComponent.long_name : 'Unknown Location';
+
+    } catch (error) {
+      console.error("Error in reverse geocoding:", error);
+      return 'Unknown Location';
     }
   };
 
-  // navigate to item details screen when clicked the card
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserProfile();
+      fetchUserItem();
+    }, [])
+  );
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    filterItems(query, selectedLocation);
+  };
+
+  const filterItems = (query, location) => {
+    const filtered = itemData.filter(item => {
+      const matchesSearch =
+        (item.itemName && item.itemName.toLowerCase().includes(query.toLowerCase())) ||
+        (item.label && item.label.toLowerCase().includes(query.toLowerCase()));
+
+      const matchesLocation = location === 'All' || (item.label && item.label === location);
+
+      return matchesSearch && matchesLocation;
+    });
+
+    setFilteredData(filtered);
+  };
+
+  // New function to handle location change from LocationTab
+  const handleLocationChange = (location) => {
+    setSelectedLocation(location);
+    filterItems(searchQuery, location);
+  };
+
+  // Navigate to item details screen when clicked the card
   const navigateToDetails = (item) => {
     navigation.navigate('ReceiverItemDetails', { item });
   };
@@ -110,7 +168,6 @@ export default function ReceiverHomeScreen() {
           elevation: 8,
         }}
       >
-        {/* if user haven't filled in name, it will display email instead */}
         {userProfile.firstName ? (
           <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
             Hi, {userProfile.firstName} {userProfile.lastName}
@@ -134,15 +191,17 @@ export default function ReceiverHomeScreen() {
         </View>
       </View>
 
-      {/* display tabs of locations as filtering, location is preset in firestore */}
+      {/* Display tabs of locations as filtering */}
       <View style={{ marginTop: 30, marginLeft: 15 }}>
         <Text style={{ fontSize: 18, fontWeight: '800' }}>Locations</Text>
-
-        <LocationTab />
+        <LocationTab
+          locations={locations}
+          selectedLocation={selectedLocation}
+          handleLocationChange={handleLocationChange}
+        />
       </View>
 
       <View style={{ padding: 16 }}>
-        {/* able to search item's name, location */}
         <Searchbar
           placeholder="Search"
           onChangeText={handleSearch}
@@ -155,7 +214,6 @@ export default function ReceiverHomeScreen() {
           flexWrap: 'wrap',
           justifyContent: 'space-between',
         }}>
-          {/* data display after filtering and searching */}
           {filteredData.length > 0 ? (
             filteredData.map((item) => (
               <View key={item.id} style={{ width: `${100 / SCREEN_WIDTH}%`, padding: 8 }}>
@@ -191,7 +249,20 @@ export default function ReceiverHomeScreen() {
                         />
                       )}
                       <View style={{ padding: 10, paddingVertical: 6 }}>
-                        <Text style={{ fontSize: 16, fontWeight: 700 }}>{item.itemName}</Text>
+                        <Text style={{ fontSize: 16, fontWeight: '800', paddingLeft: 3 }}>{item.itemName}</Text>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            backgroundColor: palette.primary.light,
+                            paddingHorizontal: 5,
+                            paddingVertical: 3,
+                            borderRadius: 5,
+                            marginVertical: 7,
+                            alignSelf: 'flex-start',
+                          }}
+                        >
+                          {item.label}
+                        </Text>
                       </View>
                     </View>
                   </Card>
@@ -199,13 +270,10 @@ export default function ReceiverHomeScreen() {
               </View>
             ))
           ) : (
-            <Text style={{ textAlign: 'center', marginTop: 20, color: '#888', fontSize: 16 }}>
-              No item found
-            </Text>
+            <Text>No items found for the selected location.</Text>
           )}
         </View>
       </View>
-    </ScrollView >
+    </ScrollView>
   );
 }
-
