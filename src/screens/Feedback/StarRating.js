@@ -3,6 +3,8 @@ import { Text } from 'react-native-paper';
 // components
 import palette from '../../theme/palette';
 
+// ----------------------------------------------------------------------
+
 export default function StarRating({ rating, setRating }) {
     const renderStars = () => {
         return [1, 2, 3, 4, 5].map((star) => (

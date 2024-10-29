@@ -12,7 +12,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 // components
 import Toast from 'react-native-toast-message';
-import { useTheme } from '../../theme';
+import palette from '../../theme/palette';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +23,6 @@ const ResetPasswordSchema = Yup.object().shape({
 // ----------------------------------------------------------------------
 
 export default function ForgotPasswordScreen() {
-    const { palette } = useTheme();
     const navigation = useNavigation();
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);

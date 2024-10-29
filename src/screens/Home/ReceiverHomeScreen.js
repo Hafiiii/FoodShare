@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { View, ScrollView, Dimensions, Image } from 'react-native';
+import { View, ScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { Searchbar, Text, Card } from 'react-native-paper';
+// @react-navigation
+import { useNavigation } from '@react-navigation/native';
 // firebase
 import { doc, collection, getDoc, getDocs } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
@@ -10,15 +12,21 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import LocationTab from './components/LocationTab';
 import palette from '../../theme/palette';
 
+// ----------------------------------------------------------------------
+
 const { width } = Dimensions.get('window');
 const SCREEN_WIDTH = width < 600 ? 2 : 4;
 
+// ----------------------------------------------------------------------
+
 export default function ReceiverHomeScreen() {
+  const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [itemData, setItemData] = useState([]);
   const [userProfile, setUserProfile] = useState({ firstName: '', lastName: '', email: '' });
 
+  // fetch user data "users" from firestore
   const fetchUserProfile = async () => {
     const uid = auth.currentUser?.uid;
 
@@ -41,6 +49,7 @@ export default function ReceiverHomeScreen() {
     }
   };
 
+  // fetch item data "items" from firestore
   const fetchUserItem = async () => {
     try {
       const querySnapshot = await getDocs(collection(firestore, "items"));
@@ -71,10 +80,10 @@ export default function ReceiverHomeScreen() {
   const handleSearch = (query) => {
     setSearchQuery(query);
     if (query) {
-      const filtered = userProfile.filter(user =>
-        (user.itemName && user.itemName.toLowerCase().includes(query.toLowerCase())) ||
-        (user.location && user.location.toLowerCase().includes(query.toLowerCase()))
-        // (user.UserContactNo && user.UserContactNo.includes(query))
+      const filtered = itemData.filter(item =>
+        (item.itemName && item.itemName.toLowerCase().includes(query.toLowerCase())) ||
+        (item.location && item.location.toLowerCase().includes(query.toLowerCase()))
+        // (item.UserContactNo && item.UserContactNo.includes(query))
       );
       setFilteredData(filtered);
     } else {
@@ -82,11 +91,16 @@ export default function ReceiverHomeScreen() {
     }
   };
 
+  // navigate to item details screen when clicked the card
+  const navigateToDetails = (item) => {
+    navigation.navigate('ReceiverItemDetails', { item });
+  };
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View
         style={{
-          marginTop: 40,
+          marginTop: 25,
           paddingHorizontal: 34,
           paddingBottom: 60,
           paddingVertical: 30,
@@ -96,6 +110,7 @@ export default function ReceiverHomeScreen() {
           elevation: 8,
         }}
       >
+        {/* if user haven't filled in name, it will display email instead */}
         {userProfile.firstName ? (
           <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
             Hi, {userProfile.firstName} {userProfile.lastName}
@@ -119,15 +134,17 @@ export default function ReceiverHomeScreen() {
         </View>
       </View>
 
-      {/* Location and Search Section */}
+      {/* display tabs of locations as filtering, location is preset in firestore */}
       <View style={{ marginTop: 30, marginLeft: 15 }}>
         <Text style={{ fontSize: 18, fontWeight: '800' }}>Locations</Text>
+
         <LocationTab />
       </View>
 
       <View style={{ padding: 16 }}>
+        {/* able to search item's name, location */}
         <Searchbar
-          placeholder="Search by Name, Email, Contact, Gender, or Role"
+          placeholder="Search"
           onChangeText={handleSearch}
           value={searchQuery}
           style={{ marginBottom: 16 }}
@@ -138,29 +155,47 @@ export default function ReceiverHomeScreen() {
           flexWrap: 'wrap',
           justifyContent: 'space-between',
         }}>
+          {/* data display after filtering and searching */}
           {filteredData.length > 0 ? (
             filteredData.map((item) => (
-              <View key={item.id} style={{ width: `${100 / SCREEN_WIDTH}%`, padding: 4 }}>
-                <Card style={{
-                  padding: 12,
-                  elevation: 2,
-                  borderRadius: 8,
-                  backgroundColor: '#fff',
-                  marginBottom: 8,
-                }}>
-                  <Card.Content>
-                    {item.imageUrl ? ( // Check if imageUrl exists
-                      <Image style={{ width: 100, height: 100 }} source={{ uri: item.imageUrl }} onError={() => console.log("Failed to load image: ", item.imageUrl)} />
-                    ) : (
-                      <Image style={{ width: 100, height: 100 }} source={require("../../../assets/icons/heart.png")} />
-                    )}
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.itemName}</Text>
-                    <Text>{item.UserEmailAddress}</Text>
-                    <Text>{item.UserContactNo}</Text>
-                    <Text>Gender: {item.UserGender}</Text>
-                    <Text>Role: {item.UserRole}</Text>
-                  </Card.Content>
-                </Card>
+              <View key={item.id} style={{ width: `${100 / SCREEN_WIDTH}%`, padding: 8 }}>
+                <TouchableOpacity onPress={() => navigateToDetails(item)}>
+                  <Card style={{
+                    padding: 8,
+                    elevation: 2,
+                    borderRadius: 18,
+                    backgroundColor: '#fff',
+                  }}>
+                    <View style={{ flexDirection: 'column' }}>
+                      {item.imageUrl ? (
+                        <Image
+                          style={{
+                            width: `${200 / SCREEN_WIDTH}%`,
+                            height: 120,
+                            borderRadius: 16,
+                          }}
+                          source={{ uri: item.imageUrl }}
+                          resizeMode="cover"
+                          onError={() => console.log("Failed to load image: ", item.imageUrl)}
+                        />
+                      ) : (
+                        <Image
+                          style={{
+                            width: '100%',
+                            height: 120,
+                            borderTopLeftRadius: 8,
+                            borderTopRightRadius: 8,
+                          }}
+                          source={require("../../../assets/icons/heart.png")}
+                          resizeMode="cover"
+                        />
+                      )}
+                      <View style={{ padding: 10, paddingVertical: 6 }}>
+                        <Text style={{ fontSize: 16, fontWeight: 700 }}>{item.itemName}</Text>
+                      </View>
+                    </View>
+                  </Card>
+                </TouchableOpacity>
               </View>
             ))
           ) : (
@@ -170,7 +205,7 @@ export default function ReceiverHomeScreen() {
           )}
         </View>
       </View>
-    </ScrollView>
+    </ScrollView >
   );
 }
 

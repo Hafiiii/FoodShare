@@ -1,34 +1,49 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View } from 'react-native';
-import { Text, Card } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { TabView, TabBar } from 'react-native-tab-view';
+// firebase
+import { collection, getDocs } from 'firebase/firestore';
+import { firestore } from '../../../utils/firebase';
 // components
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from '../../../theme';
-
-// ----------------------------------------------------------------------
-
-const locations = [
-    { id: 1, label: 'Serian' },
-    { id: 2, label: 'Bau' },
-    { id: 3, label: 'Pandawan' },
-    { id: 4, label: 'Lundu' },
-    { id: 5, label: 'Kampung Bako' },
-];
+import palette from '../../../theme/palette';
 
 // ----------------------------------------------------------------------
 
 export default function LocationTab() {
-    const { palette } = useTheme();
     const [index, setIndex] = useState(0);
-    const [routes] = useState([
-        { key: 'all', title: 'All', icon: 'book-open-outline' },
-        ...locations.map(data => ({
-            key: data.id.toString(),
-            title: data.label,
-            icon: 'map-marker-outline' || 'book-open-outline',
-        })),
-    ]);
+    const [locations, setLocations] = useState([]);
+    const [routes, setRoutes] = useState([]);
+
+    const fetchLocations = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(firestore, 'locations'));
+            const fetchedLocations = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                label: doc.data().LocationName || 'Unknown Location',
+            }));
+
+            setLocations(fetchedLocations);
+
+            const locationRoutes = [
+                { key: 'all', title: 'All', icon: 'book-open-outline' },
+                ...fetchedLocations.map(location => ({
+                    key: location.id,
+                    title: location.label,
+                    icon: 'map-marker-outline',
+                })),
+            ];
+
+            setRoutes(locationRoutes);
+        } catch (error) {
+            console.error("Error fetching locations: ", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchLocations();
+    }, []);
 
     const renderScene = ({ route }) => (
         <View
@@ -40,7 +55,6 @@ export default function LocationTab() {
             }}
         >
             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{route.title}</Text>
-            {/* Additional content for the location can be placed here */}
         </View>
     );
 
@@ -71,7 +85,7 @@ export default function LocationTab() {
                         marginLeft: 4,
                         fontSize: 14,
                         color: focused ? '#fff' : palette.disabled.main,
-                        fontWeight: focused ? 700 : 400,
+                        fontWeight: focused ? '700' : '400',
                     }}>
                         {route.title}
                     </Text>
@@ -81,12 +95,18 @@ export default function LocationTab() {
     );
 
     return (
-        <TabView
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            initialLayout={{ width: 400 }}
-            renderTabBar={renderTabBar}
-        />
+        <View style={{ flex: 1 }}>
+            {routes.length > 0 ? (
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width: 400 }}
+                    renderTabBar={renderTabBar}
+                />
+            ) : (
+                <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading locations...</Text>
+            )}
+        </View>
     );
 }

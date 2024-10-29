@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Button, Text, TextInput, RadioButton, IconButton } from 'react-native-paper';
 // @react-navigation
 import { useNavigation, Link } from '@react-navigation/native';
@@ -16,9 +16,16 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 // components
 import Toast from 'react-native-toast-message';
-import { useTheme } from '../../theme';
+import palette from '../../theme/palette';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // ----------------------------------------------------------------------
+
+const roles = [
+    { label: 'Donator', value: 'Donator', icon: 'handshake-o' },
+    { label: 'Rider', value: 'Rider', icon: 'motorcycle' },
+    { label: 'Receiver', value: 'Receiver', icon: 'gift' }
+];
 
 const RegisterSchema = Yup.object().shape({
     email: Yup.string().required('Email is required').email('Invalid email format'),
@@ -30,7 +37,6 @@ const RegisterSchema = Yup.object().shape({
 // ----------------------------------------------------------------------
 
 export default function AuthRegisterForm() {
-    const { palette } = useTheme();
     const { handleRegister } = useAuth();
     const navigation = useNavigation();
     const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +69,7 @@ export default function AuthRegisterForm() {
             });
 
             handleRegister();
-            navigation.navigate('Login'); 
+            navigation.navigate('Login');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -155,11 +161,42 @@ export default function AuthRegisterForm() {
                 control={control}
                 name="role"
                 render={({ field: { onChange, value } }) => (
-                    <RadioButton.Group onValueChange={onChange} value={value}>
-                        <RadioButton.Item label="Donator" value="Donator" />
-                        <RadioButton.Item label="Rider" value="Rider" />
-                        <RadioButton.Item label="Receiver" value="Receiver" />
-                    </RadioButton.Group>
+                    <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-around',
+                        marginVertical: 30,
+                    }}>
+                        {roles.map((role) => (
+                            <TouchableOpacity
+                                key={role.value}
+                                onPress={() => onChange(role.value)}
+                                style={[
+                                    {
+                                        paddingHorizontal: 7,
+                                        paddingVertical: 13,
+                                        borderRadius: 5,
+                                        backgroundColor: palette.primary.light,
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                    },
+                                    value === role.value && { backgroundColor: palette.primary.main }
+                                ]}
+                            >
+                                <Icon
+                                    name={role.icon}
+                                    size={18}
+                                    color={value === role.value ? 'white' : 'black'}
+                                    style={{ marginRight: 4 }}
+                                />
+                                <Text style={[
+                                    { color: 'black' },
+                                    value === role.value && { color: 'white' }
+                                ]}>
+                                    {role.label}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                 )}
             />
             {errors.role && <Text style={{ color: palette.error.main }}>{errors.role.message}</Text>}
@@ -171,7 +208,7 @@ export default function AuthRegisterForm() {
                 onPress={handleSubmit(handleRegisterAttempt)}
                 loading={loading}
                 disabled={loading}
-                style={{ marginTop: 20 }}
+                style={{ marginTop: 10 }}
             >
                 Register
             </Button>

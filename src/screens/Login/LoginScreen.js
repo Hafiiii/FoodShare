@@ -4,13 +4,11 @@ import { Text } from 'react-native-paper';
 import { Link } from '@react-navigation/native';
 // components
 import AuthLoginForm from './AuthLoginForm';
-import { useTheme } from '../../theme';
+import palette from '../../theme/palette';
 
 // ----------------------------------------------------------------------
 
 export default function LoginScreen() {
-  const { palette } = useTheme();
-
   return (
     <View
       style={{

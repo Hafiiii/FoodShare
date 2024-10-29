@@ -6,7 +6,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import Toast from 'react-native-toast-message';
 import { ThemeProvider } from './src/theme';
 
-
+// ----------------------------------------------------------------------
 
 const theme = {
   ...DefaultTheme,

@@ -4,13 +4,11 @@ import { Text } from 'react-native-paper';
 import { Link } from '@react-navigation/native';
 // components
 import AuthResetPasswordForm from './AuthResetPasswordForm';
-import { useTheme } from '../../theme';
+import palette from '../../theme/palette';
 
 // ----------------------------------------------------------------------
 
-export default function ResetPasswordScreen() {
-  const { palette } = useTheme();
-  
+export default function ResetPasswordScreen() {  
   return (
     <View
       style={{

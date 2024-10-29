@@ -13,19 +13,17 @@ import Toast from 'react-native-toast-message';
 import StarRating from './StarRating';
 import palette from '../../theme/palette';
 
+// ----------------------------------------------------------------------
+
 const FeedbackSchema = Yup.object().shape({
-    name: Yup.string().when('isAnonymous', {
-        is: false,
-        then: Yup.string().required('Name is required'),
-    }),
-    email: Yup.string().when('isAnonymous', {
-        is: false,
-        then: Yup.string().required('Email is required').email('Invalid email format'),
-    }),
+    name: Yup.string().when('isAnonymous', { is: false, then: Yup.string().required('Name is required'), }),
+    email: Yup.string().when('isAnonymous', { is: false, then: Yup.string().required('Email is required').email('Invalid email format'), }),
     feedback: Yup.string().required('Feedback is required').min(10, 'Feedback must be at least 10 characters'),
     rating: Yup.number().required('Rating is required').min(1, 'Rating must be at least 1').max(5, 'Rating must be at most 5'),
     userRole: Yup.string().required('User role is required'),
 });
+
+// ----------------------------------------------------------------------
 
 export default function FeedbackForm() {
     const [error, setError] = useState(null);

@@ -13,7 +13,7 @@ import { auth } from '../../utils/firebase';
 // auth
 import { useAuth } from '../../context/AuthContext';
 // components
-import { useTheme } from '../../theme';
+import palette from '../../theme/palette';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +25,6 @@ const LoginSchema = Yup.object().shape({
 // ----------------------------------------------------------------------
 
 export default function AuthLoginForm() {
-  const { palette } = useTheme();
   const navigation = useNavigation();
   const { handleLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);

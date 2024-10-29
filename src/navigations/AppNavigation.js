@@ -27,15 +27,9 @@ import RecipesListScreen from '../screens/RecipesList/RecipesListScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FeedbackScreen from '../screens/Feedback/FeedbackScreen';
 import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
-// ----------------------------------------------------------------------
+import ReceiverItemDetails from '../screens/Home/view/ReceiverItemDetails';
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#4CAF50',
-  },
-};
+// ----------------------------------------------------------------------
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -109,6 +103,13 @@ const RiderStackNavigator = () => (
   </Stack.Navigator>
 );
 
+const ReceiverStackNavigator = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="ReceiverHome" component={ReceiverHomeScreen} />
+    <Stack.Screen name="ReceiverItemDetails" component={ReceiverItemDetails} />
+  </Stack.Navigator>
+);
+
 export default function AppContainer() {
   const { user, initializing } = useAuth();
   const [userRole, setUserRole] = useState(null);
@@ -144,7 +145,7 @@ export default function AppContainer() {
               if (userRole === 'Donator') {
                 return <MainTabNavigator component={DonatorStackNavigator} />;
               } else if (userRole === 'Receiver') {
-                return <MainTabNavigator component={ReceiverHomeScreen} />;
+                return <MainTabNavigator component={ReceiverStackNavigator} />;
               } else if (userRole === 'Rider') {
                 return <MainTabNavigator component={RiderStackNavigator} />;
               }
