@@ -1,66 +1,187 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, Button } from 'react-native'; // Add Image and Button to the import
-import MapView, { Marker, Polyline } from 'react-native-maps'; // Import MapView, Marker and Polyline
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+// import MapView, { Marker, Polyline } from 'react-native-maps';
+import { doc, getDoc, DocumentReference } from 'firebase/firestore';
+import { firestore } from '../../utils/firebase';
 
 const BookingDetailScreen = ({ route, navigation }) => {
-  const { order } = route.params;
+  const { orderId } = route.params;
+  const [order, setOrder] = useState(null);
+  // const [isReserved, setIsReserved] = useState(false); // Tracks if slot is reserved
+  const [showCompleteButton, setShowCompleteButton] = useState(false); // Tracks if "Complete Delivery" should be shown
 
-  // Set default coordinates for the donator and receiver
-  const donatorLocation = {
-    latitude: order.donatorLat || 1.5607, //Replace with real data later
-    longitude: order.donatorLong || 110.3457, // Replace with real data later
+  // Fetch order data from Firebase, including referenced items collection
+  const fetchOrder = async () => {
+    try {
+      console.log("Fetching order...");
+
+      // Fetch order document from the orders collection
+      const orderDoc = await getDoc(doc(firestore, 'orders', orderId));
+      if (orderDoc.exists()) {
+        const orderData = orderDoc.data();
+        console.log("Order data:", orderData);
+
+        // Ensure itemId is correctly extracted
+        const itemRef = orderData.itemId;
+        if (itemRef && itemRef instanceof DocumentReference) {
+          const itemDoc = await getDoc(itemRef);
+
+          if (itemDoc.exists()) {
+            const itemData = itemDoc.data();
+            console.log("Item data:", itemData);
+
+            // Combine order and item data, with null checks for each field
+            setOrder({
+              ...orderData,
+              foodImage: itemData.imageUrl || null,
+              foodName: itemData.itemName || 'No name available',
+              donatorLocation: itemData.location || 'Location not available',
+              receiverLocation: orderData.receiverLocation || 'Receiver location not available'
+            });
+
+            // Set the state for button visibility
+            setShowCompleteButton(orderData.isReserved || false);
+          } else {
+            console.log('Error: Item document does not exist.');
+          }
+        } else {
+          console.log('Error: itemId is either missing or not a DocumentReference.');
+        }
+      } else {
+        console.log('Error: Order document does not exist.');
+      }
+    } catch (error) {
+      console.error("Error fetching order: ", error);
+    }
   };
 
-  const receiverLocation = {
-    latitude: order.receiverLat || 1.5646, // Replace with real data later
-    longitude: order.receiverLong || 110.3514, // Replace with real data later
+
+  useEffect(() => {
+    fetchOrder();
+  }, []);
+
+  if (!order) {
+    return <Text>Loading...</Text>;
+  }
+
+  // Helper function to convert Firestore Timestamp to readable time
+  const convertTimestampToTime = (timestamp) => {
+    if (timestamp && timestamp.seconds) {
+      const date = new Date(timestamp.seconds * 1000); // Convert to milliseconds
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    return 'No time available';
   };
+
+  // Reserve Slot function
+  const reserveSlot = async () => {
+    try {
+      await updateDoc(doc(firestore, 'orders', orderId), { isReserved: true });
+      setIsReserved(true);
+      Alert.alert(
+        "Slot Reserved",
+        "A notification has been sent to the donator and receiver.",
+        [
+          { text: "Return to Booking Planner", onPress: () => navigation.goBack() }
+        ]
+      );
+    } catch (error) {
+      console.error("Error reserving slot: ", error);
+    }
+  };
+
+  // Complete Delivery function
+  const completeDelivery = async () => {
+    try {
+      await updateDoc(doc(firestore, 'orders', orderId), { isCompleted: true });
+      Alert.alert(
+        "Delivery Completed",
+        "A notification has been sent to the donator and receiver.",
+        [
+          { text: "Return to Booking Planner", onPress: () => navigation.goBack() }
+        ]
+      );
+    } catch (error) {
+      console.error("Error completing delivery: ", error);
+    }
+  };
+
+  /* Retrieve coordinates from order data and handle null checks
+  const donatorLocation = order.donatorLocation
+    ? {
+        latitude: order.donatorLocation.latitude,
+        longitude: order.donatorLocation.longitude,
+      }
+    : { latitude: 0, longitude: 0 };
+
+  const receiverLocation = order.receiverLocation
+    ? {
+        latitude: order.receiverLocation.latitude,
+        longitude: order.receiverLocation.longitude,
+      }
+    : { latitude: 0, longitude: 0 };
+  */
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Booking Details</Text>
-      <Text style={styles.time}>{order.startTime} - {order.endTime}</Text>
-      <Text style={styles.location}>Location: {order.location}</Text>
-      
-      {/* Map Navigation */}
+      <Text style={styles.FoodShareShift}>FoodShare Shift</Text>
+      <Text style={styles.time}>{convertTimestampToTime(order.startTime)} - {convertTimestampToTime(order.endTime)}</Text>
+
+      <Text style={styles.location}>Pick-up Location: {order.location}</Text>
+      <Text style={styles.location}>Drop-off Location: {order.receiverLocation}</Text>
+
+      {/*  
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: (donatorLocation.latitude + receiverLocation.latitude) / 2, // Add latitude from order
-          longitude: (donatorLocation.longitude + receiverLocation.longitude) / 2, // Add longitude from order
+          latitude: (donatorLocation.latitude + receiverLocation.latitude) / 2,
+          longitude: (donatorLocation.longitude + receiverLocation.longitude) / 2,
           latitudeDelta: Math.abs(donatorLocation.latitude - receiverLocation.latitude) + 0.01,
           longitudeDelta: Math.abs(donatorLocation.longitude - receiverLocation.longitude) + 0.01,
         }}
       >
-        {/* Donator's Location Pin */}
+        
         <Marker 
-        coordinate={donatorLocation}
-        title="Donator's Location"
-        description='order.location' />
-
-        {/* Receiver's Location Pin */}
-        <Marker
-        coordinate={receiverLocation}
-        title="Receiver's Location"
+          coordinate={donatorLocation}
+          title="Donator's Location"
+          description={order.location}
         />
-        {/* Route from Donator to Receiver */}
+
+        
+        <Marker
+          coordinate={receiverLocation}
+          title="Receiver's Location"
+        />
+
+        
         <Polyline
-        coordinates={[donatorLocation, receiverLocation]}
-        strokeColor="#4287f5" // Change colour later
-        strokeWidth={3}
+          coordinates={[donatorLocation, receiverLocation]}
+          strokeColor="#4287f5"
+          strokeWidth={3}
         />
       </MapView>
+      */}
+
+      <Text style={styles.orderDetails}>Order Details</Text>
 
       {/* Image Display */}
-      <Image source={{ uri: order.foodImage }} style={styles.image} />
-      <Text style={styles.orderDetails}>Order Details</Text>
-      <Text style={styles.foodName}>{order.foodName}</Text>
-      <Text style={styles.quantity}>Qty: {order.quantity}</Text>
-      
-      {/* Return to Booking Planner Button */}
-      <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-        <Text style={styles.buttonText}>Return to Booking Planner</Text>
-      </TouchableOpacity>
+      {order.imageUrl && (
+        <Image source={{ uri: order.imageUrl }} style={styles.image} />
+      )}
+
+      <Text style={styles.foodName}>{order.itemName}</Text>
+
+      {!showCompleteButton ? (
+        <TouchableOpacity style={styles.button} onPress={reserveSlot}>
+          <Text style={styles.buttonText}>Reserve My Slot</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={completeDelivery}>
+          <Text style={styles.buttonText}>Complete Delivery</Text>
+        </TouchableOpacity>
+      )}
+
     </View>
   );
 };
@@ -68,24 +189,19 @@ const BookingDetailScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   title: { fontSize: 20, fontWeight: 'bold' },
-  time: { fontSize: 16, marginTop: 10 },
+  time: { fontSize: 16, marginTop: 5 },
   location: { fontSize: 16, marginVertical: 10 },
-  map: { width: '100%', height: 200, marginVertical: 15 }, // Style for the map
   image: { width: '100%', height: 200, marginVertical: 15 },
   orderDetails: { fontSize: 18, fontWeight: 'bold', marginTop: 20 },
   foodName: { fontSize: 16 },
-  quantity: { fontSize: 16 },
   button: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#4CAF50',
     borderRadius: 5,
     alignItems: 'center',
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-  },
+  buttonText: { color: 'white', fontSize: 16 },
 });
 
 export default BookingDetailScreen;
