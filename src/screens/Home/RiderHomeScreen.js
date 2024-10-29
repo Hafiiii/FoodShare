@@ -132,9 +132,9 @@ const renderOrder = ({ item }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 20, fontWeight: 'bold' },
-  orderContainer: { 
+  container: { flex: 1, padding: 20},
+  title: { fontSize: 30, fontWeight: 'bold', marginTop: 40, marginBottom: 10 },
+    orderContainer: { 
     marginBottom: 10, 
     padding: 15, 
     backgroundColor: '#D4D4D4', 

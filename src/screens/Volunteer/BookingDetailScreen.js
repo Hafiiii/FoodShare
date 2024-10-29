@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 // import MapView, { Marker, Polyline } from 'react-native-maps';
-import { doc, getDoc, DocumentReference } from 'firebase/firestore';
+import { doc, getDoc, DocumentReference, updateDoc } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
 
 const BookingDetailScreen = ({ route, navigation }) => {
@@ -14,23 +14,24 @@ const BookingDetailScreen = ({ route, navigation }) => {
   const fetchOrder = async () => {
     try {
       console.log("Fetching order...");
-
+  
       // Fetch order document from the orders collection
       const orderDoc = await getDoc(doc(firestore, 'orders', orderId));
       if (orderDoc.exists()) {
         const orderData = orderDoc.data();
         console.log("Order data:", orderData);
-
-        // Ensure itemId is correctly extracted
+  
+        // Ensure itemId is correctly extracted as a DocumentReference
         const itemRef = orderData.itemId;
-        if (itemRef && itemRef instanceof DocumentReference) {
+        if (itemRef) {
+          // Fetch the referenced item document from the items collection
           const itemDoc = await getDoc(itemRef);
-
+  
           if (itemDoc.exists()) {
             const itemData = itemDoc.data();
             console.log("Item data:", itemData);
-
-            // Combine order and item data, with null checks for each field
+  
+            // Combine order and item data with null checks
             setOrder({
               ...orderData,
               foodImage: itemData.imageUrl || null,
@@ -38,14 +39,14 @@ const BookingDetailScreen = ({ route, navigation }) => {
               donatorLocation: itemData.location || 'Location not available',
               receiverLocation: orderData.receiverLocation || 'Receiver location not available'
             });
-
-            // Set the state for button visibility
+  
+            // Set button visibility based on reservation status
             setShowCompleteButton(orderData.isReserved || false);
           } else {
             console.log('Error: Item document does not exist.');
           }
         } else {
-          console.log('Error: itemId is either missing or not a DocumentReference.');
+          console.log('Error: itemId is missing or not a valid DocumentReference.');
         }
       } else {
         console.log('Error: Order document does not exist.');
@@ -77,7 +78,7 @@ const BookingDetailScreen = ({ route, navigation }) => {
   const reserveSlot = async () => {
     try {
       await updateDoc(doc(firestore, 'orders', orderId), { isReserved: true });
-      setIsReserved(true);
+      setShowCompleteButton(true);
       Alert.alert(
         "Slot Reserved",
         "A notification has been sent to the donator and receiver.",
@@ -104,6 +105,15 @@ const BookingDetailScreen = ({ route, navigation }) => {
     } catch (error) {
       console.error("Error completing delivery: ", error);
     }
+  };
+
+  // Helper function to display placeholder if image URL is empty
+  const renderFoodImage = () => {
+    return order.foodImage ? (
+      <Image source={{ uri: order.foodImage }} style={styles.image} />
+    ) : (
+      <Text>No Image Available</Text>
+    );
   };
 
   /* Retrieve coordinates from order data and handle null checks
@@ -163,37 +173,37 @@ const BookingDetailScreen = ({ route, navigation }) => {
       </MapView>
       */}
 
-      <Text style={styles.orderDetails}>Order Details</Text>
+    <Text style={styles.orderDetails}>Order Details</Text>
 
-      {/* Image Display */}
-      {order.imageUrl && (
-        <Image source={{ uri: order.imageUrl }} style={styles.image} />
-      )}
+    {/* Render Food Image */}
+    {renderFoodImage()}
 
-      <Text style={styles.foodName}>{order.itemName}</Text>
+    <Text style={styles.foodName}>{order.foodName}</Text>
+    <Text style={styles.description}>{order.description || 'No description available'}</Text>
 
-      {!showCompleteButton ? (
-        <TouchableOpacity style={styles.button} onPress={reserveSlot}>
-          <Text style={styles.buttonText}>Reserve My Slot</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={completeDelivery}>
-          <Text style={styles.buttonText}>Complete Delivery</Text>
-        </TouchableOpacity>
-      )}
-
+   {!showCompleteButton ? (
+    <TouchableOpacity style={styles.button} onPress={reserveSlot}>
+      <Text style={styles.buttonText}>Reserve My Slot</Text>
+    </TouchableOpacity>
+    ) : (
+    <TouchableOpacity style={styles.button} onPress={completeDelivery}>
+      <Text style={styles.buttonText}>Complete Delivery</Text>
+    </TouchableOpacity>
+    )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
-  title: { fontSize: 20, fontWeight: 'bold' },
-  time: { fontSize: 16, marginTop: 5 },
-  location: { fontSize: 16, marginVertical: 10 },
+  title: { fontSize: 30, fontWeight: 'bold', marginTop: 40 },
+  FoodShareShift: { fontSize: 20, fontWeight: 'bold', marginTop: 5},
+  time: { fontSize: 20, marginTop: 5 },
+  location: { fontSize: 20, marginTop: 5},
   image: { width: '100%', height: 200, marginVertical: 15 },
-  orderDetails: { fontSize: 18, fontWeight: 'bold', marginTop: 20 },
-  foodName: { fontSize: 16 },
+  orderDetails: { fontSize: 25, fontWeight: 'bold', marginTop: 30},
+  foodName: { fontSize: 20, marginTop: 10 },
+  description: { fontSize: 20, marginTop: 5 },
   button: {
     marginTop: 20,
     padding: 15,
