@@ -1,15 +1,17 @@
 import { useLayoutEffect, useState, useEffect } from "react";
-import { FlatList, Text, View, TouchableHighlight, Image, ActivityIndicator } from "react-native";
+import { FlatList, Text, View, TouchableHighlight, Image, ActivityIndicator, ScrollView, TouchableOpacity } from "react-native";
 import styles from "./styles"; // Ensure styles are defined
 import MenuImage from "../../components/MenuImage/MenuImage"; // Adjust path as necessary
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase'; // Adjust the path as necessary
+import palette from '../../theme/palette';
 
 export default function DonatorHomeScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [recipeData, setRecipeData] = useState([]);
+  const [userProfile, setUserProfile] = useState({}); // Initialize userProfile
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -27,7 +29,15 @@ export default function DonatorHomeScreen({ navigation }) {
       }
     };
 
+    // Simulate fetching user profile (replace with your actual user fetching logic)
+    const fetchUserProfile = () => {
+      // Example user profile, replace with actual fetch logic
+      const profile = { firstName: "Donator", lastName: "", email: "john.doe@example.com" };
+      setUserProfile(profile);
+    };
+
     fetchRecipes();
+    fetchUserProfile();
   }, []);
 
   useLayoutEffect(() => {
@@ -50,7 +60,7 @@ export default function DonatorHomeScreen({ navigation }) {
   const renderRecipes = ({ item }) => (
     <TouchableHighlight underlayColor="rgba(73,182,77,0.9)" onPress={() => onPressRecipe(item)}>
       <View style={styles.container}>
-        {item.imageUrl ? ( // Check if imageUrl exists
+        {item.imageUrl ? (
           <Image style={styles.photo} source={{ uri: item.imageUrl }} />
         ) : (
           <Image style={styles.photo} source={require("../../../assets/icons/heart.png")} />
@@ -61,7 +71,6 @@ export default function DonatorHomeScreen({ navigation }) {
     </TouchableHighlight>
   );
 
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -70,36 +79,78 @@ export default function DonatorHomeScreen({ navigation }) {
     );
   }
 
+  const renderHeader = () => (
+    <View
+      style={{
+        marginTop: 45,
+        paddingHorizontal: 30,
+        paddingBottom: 20,
+        paddingVertical: 20,
+        backgroundColor: palette.primary.main,
+        borderBottomLeftRadius: 40,
+        borderBottomRightRadius: 40,
+        elevation: 8,
+      }}
+    >
+      {userProfile.firstName ? (
+        <Text style={{ fontSize: 19, marginBottom: 30, color: 'white' }}>
+          Hi, {userProfile.firstName} {userProfile.lastName}
+        </Text>
+      ) : (
+        <Text style={{ fontSize: 19, marginBottom: 20, color: 'white' }}>
+          Hi, {userProfile.email || 'Guest'}
+        </Text>
+      )}
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'column' }}>
+          <Text style={{ fontSize: 24, color: 'white' }}>
+            Connect <Text style={{ fontWeight: '800', fontSize: 25, color: 'white' }}>People In Need</Text> is
+          </Text>
+          <Text style={{ fontSize: 24, color: 'white' }}>
+            With those who <Text style={{ fontWeight: 'bold', fontSize: 25, color: 'white' }}>Can Help</Text>
+          </Text>
+        </View>
+        <Icon name='food' size={60} color="white" />
+      </View>
+
+      {/* Add New Item Button */}
+      <TouchableHighlight
+        style={{
+          marginTop: 20,
+          backgroundColor: 'white',
+          borderRadius: 10,
+          padding: 15,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}
+        underlayColor="rgba(73,182,77,0.9)"
+        onPress={onPressAddNew}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons name="add-circle" size={40} color="green" style={{ marginRight: 10 }} />
+          <Text style={{ fontSize: 18, color: 'green' }}>Add New Item</Text>
+        </View>
+      </TouchableHighlight>
+    </View>
+  );
+
   const navigateToProfile = () => {
     navigation.navigate('ProfileHome');
   };
 
   return (
-    <>
-      <View style={styles.screen}>
-        <Text style={styles.headerText}>Donator Home</Text>
-
-        <TouchableHighlight
-          style={styles.addCard}
-          underlayColor="rgba(73,182,77,0.9)"
-          onPress={onPressAddNew}
-        >
-          <View style={styles.addCardContainer}>
-            <Ionicons name="add-circle" size={50} color="green" style={styles.addIcon} />
-            <Text style={styles.addCardText}>Add New Item</Text>
-          </View>
-        </TouchableHighlight>
-
-        <FlatList
-          vertical
-          showsVerticalScrollIndicator={false}
-          numColumns={2}
-          data={recipeData}
-          renderItem={renderRecipes}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer} // Added style for the FlatList content
-        />
-      </View>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <FlatList
+        data={recipeData}
+        renderItem={renderRecipes}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader} // Add header to FlatList
+        showsVerticalScrollIndicator={false}
+        numColumns={2}
+        contentContainerStyle={styles.listContainer} // Added style for the FlatList content
+      />
 
       {/* Floating Button */}
       <TouchableOpacity
@@ -119,6 +170,6 @@ export default function DonatorHomeScreen({ navigation }) {
       >
         <Icon name="account" size={28} color="#fff" />
       </TouchableOpacity>
-    </>
+    </View>
   );
 }
