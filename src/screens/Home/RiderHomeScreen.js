@@ -7,7 +7,6 @@ import { firestore } from '../../utils/firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import palette from '../../theme/palette';
 import { GOOGLE_MAPS_API_KEY } from '@env';
-import palette from '../../theme/palette';
 
 const RiderHomeScreen = () => {
   const navigation = useNavigation();
