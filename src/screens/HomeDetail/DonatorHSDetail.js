@@ -1,13 +1,12 @@
-// DonatorHSDetail.js
-
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { Card } from "react-native-paper";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
+import { Card, Button } from "react-native-paper";
 import { GOOGLE_MAPS_API_KEY } from '@env';
 import { firestore } from "../../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import MapView, { Marker } from "react-native-maps";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Add this line
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import palette from '../../theme/palette';
 
 export default function DonatorHSDetail({ navigation, route }) {
   const { item, title } = route.params;
@@ -38,49 +37,117 @@ export default function DonatorHSDetail({ navigation, route }) {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Card style={styles.card}>
+    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         {item.imageUrl ? (
-          <Card.Cover source={{ uri: item.imageUrl }} style={styles.image} />
+          <Image
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+            source={{ uri: item.imageUrl }}
+            resizeMode="cover"
+          />
         ) : (
-          <Card.Cover source={require("../../../assets/icons/heart.png")} style={styles.image} />
+          <Image
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+            source={require("../../../assets/icons/heart.png")}
+            resizeMode="cover"
+          />
         )}
-        <Card.Content>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.detail}>Item Name: {item.itemName}</Text>
-          <Text style={styles.detail}>Description: {item.description}</Text>
-          <Text style={styles.detail}>Address: {address}</Text>
-        </Card.Content>
-        {item.location && (
-          <View style={styles.mapContainer}>
-            <MapView
-              style={styles.map}
-              initialRegion={{
-                latitude: item.location._lat,
-                longitude: item.location._long,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-            >
-              <Marker
-                coordinate={{
-                  latitude: item.location._lat,
-                  longitude: item.location._long,
-                }}
-                title={item.itemName}
-                description={address}
-              />
-            </MapView>
-          </View>
-        )}
-      </Card>
 
-      {/* Go Back Button */}
-      <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-        <Icon name="arrow-left" size={24} color="#fff" />
-        <Text style={styles.goBackText}>Go Back</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            width: '100%',
+            minHeight: 260,
+            paddingVertical: 40,
+            paddingHorizontal: 24,
+            backgroundColor: '#fff',
+            borderTopLeftRadius: 56,
+            borderTopRightRadius: 56,
+          }}
+        >
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5, marginBottom: 5 }} />
+          </TouchableOpacity>
+
+          <Text style={{ fontSize: 19, fontWeight: '700' }}>
+            {item.itemName}
+          </Text>
+
+          <View style={{ flexDirection: 'row', flex: 1, marginTop: 25 }}>
+            {item.location && (
+              <View style={{ width: 100, height: 100 }}>
+                <MapView
+                  style={{ flex: 1 }}
+                  initialRegion={{
+                    latitude: item.location.latitude,
+                    longitude: item.location.longitude,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                >
+                  <Marker
+                    coordinate={{
+                      latitude: item.location.latitude,
+                      longitude: item.location.longitude,
+                    }}
+                    title={item.itemName}
+                    description={address}
+                  />
+                </MapView>
+              </View>
+            )}
+
+            <View style={{ flexDirection: 'column', flex: 1, marginLeft: 15 }}>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                Address
+              </Text>
+              <Text>{address || item.address}</Text>
+              <Text
+                style={{
+                  fontSize: 12,
+                  backgroundColor: palette.primary.light,
+                  paddingHorizontal: 5,
+                  paddingVertical: 3,
+                  borderRadius: 5,
+                  marginVertical: 10,
+                  marginLeft: -2,
+                  alignSelf: 'flex-start',
+                }}
+              >
+                {item.label}
+              </Text>
+            </View>
+          </View>
+
+          {item.description &&
+            <View style={{ flexDirection: 'column', marginTop: 20 }}>
+              <Text style={{ fontSize: 15, fontWeight: 'bold' }}>
+                Description
+              </Text>
+              <Text>{item.description}</Text>
+            </View>
+          }
+        </View>
+      </ScrollView>
+
+      <View style={{ padding: 12 }}>
+        <Button
+          mode="contained"
+          onPress={() => navigation.goBack()}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: "white", fontWeight: '700', fontSize: 16 }}>Back</Text>
+          </View>
+        </Button>
+      </View>
+    </View>
   );
 }
 

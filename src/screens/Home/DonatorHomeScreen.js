@@ -172,6 +172,10 @@ export default function DonatorHomeScreen({ navigation }) {
           <Text style={{ fontSize: 18, color: 'green' }}>Add New Item</Text>
         </View>
       </TouchableHighlight>
+      {/* New Title for Added Item */}
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 30 }}>
+            Item Added
+          </Text>
     </View>
   );
 
