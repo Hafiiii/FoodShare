@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Card, Button } from "react-native-paper";
 import { GOOGLE_MAPS_API_KEY } from '@env';
-import { firestore } from "../../utils/firebase";
+// import { firestore } from "../../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import MapView, { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import palette from '../../theme/palette';
+import palette from '../../../theme/palette';
 
 export default function DonatorHSDetail({ navigation, route }) {
   const { item, title } = route.params;
@@ -54,7 +54,7 @@ export default function DonatorHSDetail({ navigation, route }) {
               width: '100%',
               height: '100%',
             }}
-            source={require("../../../assets/icons/heart.png")}
+            source={require("../../../../assets/icons/heart.png")}
             resizeMode="cover"
           />
         )}
@@ -150,52 +150,3 @@ export default function DonatorHSDetail({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  goBackButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#6200ee',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 15, // Add some space above the button
-  },
-  goBackText: {
-    color: '#fff',
-    marginLeft: 5,
-    fontSize: 16,
-  },
-  card: {
-    borderRadius: 10,
-    elevation: 3,
-    overflow: "hidden",
-  },
-  image: {
-    height: 200,
-    resizeMode: "cover",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginVertical: 10,
-  },
-  detail: {
-    fontSize: 16,
-    marginVertical: 2,
-    color: "gray",
-  },
-  mapContainer: {
-    height: 200,
-    marginTop: 15,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  map: {
-    flex: 1,
-  },
-});

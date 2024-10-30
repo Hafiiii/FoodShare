@@ -1,18 +1,18 @@
-import React from "react";
-import { TouchableHighlight, Image, } from "react-native";
-import PropTypes from "prop-types";
-import styles from "./styles";
+import { TouchableOpacity } from 'react-native';
+// @react-navigation
+import { useNavigation } from '@react-navigation/native';
+// components
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import palette from '../../theme/palette';
 
-export default function BackButton(props) {
-  return (
-    <TouchableHighlight onPress={props.onPress} style={styles.btnContainer}>
-      <Image source={require("../../../assets/icons/backArrow.png")} style={styles.btnIcon} />
-    </TouchableHighlight>
-  );
+// ----------------------------------------------------------------------
+
+export default function BackButton() {
+    const navigation = useNavigation();
+
+    return (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
+        </TouchableOpacity>
+    );
 }
-
-BackButton.propTypes = {
-  onPress: PropTypes.func,
-  source: PropTypes.number,
-  title: PropTypes.string,
-};

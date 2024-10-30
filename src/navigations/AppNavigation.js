@@ -15,11 +15,12 @@ import DonatorHomeScreen from '../screens/Home/DonatorHomeScreen';
 import ReceiverHomeScreen from '../screens/Home/ReceiverHomeScreen';
 import RiderHomeScreen from '../screens/Home/RiderHomeScreen';
 import AddNewItemScreen from '../screens/AddItem/AddNewItemScreen';
-import DonatorHSDetail from '../screens/HomeDetail/DonatorHSDetail';
+import DonatorHSDetail from '../screens/Home/view/DonatorHSDetail';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FeedbackScreen from '../screens/Feedback/FeedbackScreen';
 import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
 import ReceiverItemDetails from '../screens/Home/view/ReceiverItemDetails';
+import DonatorItemDetails from '../screens/Home/view/DonatorItemDetails';
 import ReservedItemForm from '../screens/Home/view/ReservedItemForm';
 
 // ----------------------------------------------------------------------
@@ -38,6 +39,7 @@ const DonatorStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="DonatorHome" component={DonatorHomeScreen} />
     <Stack.Screen name="AddNewItem" component={AddNewItemScreen} />
+    <Stack.Screen name="DonatorItemDetails" component={DonatorItemDetails} />
     <Stack.Screen name="DonatorHSDetail" component={DonatorHSDetail} />
     <Stack.Screen name="ProfileHome" component={ProfileScreen} />
     <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />

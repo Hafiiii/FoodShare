@@ -14,7 +14,7 @@ import { auth, firestore } from '../../utils/firebase';
 import Toast from 'react-native-toast-message';
 import StarRating from './StarRating';
 import palette from '../../theme/palette';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import BackButton from '../../components/BackButton/BackButton';
 
 // ----------------------------------------------------------------------
 
@@ -122,9 +122,7 @@ export default function FeedbackForm() {
 
     return (
         <ScrollView style={{ padding: 30, marginTop: 60 }}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
-          </TouchableOpacity>
+            <BackButton />
 
             <View style={{ alignItems: 'center', marginBottom: 15 }}>
                 <Image
