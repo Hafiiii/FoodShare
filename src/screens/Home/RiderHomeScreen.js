@@ -5,6 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../utils/firebase';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import palette from '../../theme/palette';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 const RiderHomeScreen = () => {
