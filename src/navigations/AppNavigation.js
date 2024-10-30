@@ -20,6 +20,7 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FeedbackScreen from '../screens/Feedback/FeedbackScreen';
 import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
 import ReceiverItemDetails from '../screens/Home/view/ReceiverItemDetails';
+import ReservedItemForm from '../screens/Home/view/ReservedItemForm';
 
 // ----------------------------------------------------------------------
 
@@ -56,6 +57,7 @@ const ReceiverStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ReceiverHome" component={ReceiverHomeScreen} />
     <Stack.Screen name="ReceiverItemDetails" component={ReceiverItemDetails} />
+    <Stack.Screen name="ReservedItemForm" component={ReservedItemForm} />
     <Stack.Screen name="ProfileHome" component={ProfileScreen} />
     <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
   </Stack.Navigator>

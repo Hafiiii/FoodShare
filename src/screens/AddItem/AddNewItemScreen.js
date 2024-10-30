@@ -117,8 +117,8 @@ export default function AddNewItemScreen({ navigation }) {
       await addDoc(collection(firestore, "items"), {
         itemName,
         description,
-        location: new GeoPoint(location.latitude, location.longitude), // Save GeoPoint
-        address, // Save user-entered address
+        location: new GeoPoint(location.latitude, location.longitude),
+        address,
         donatorId: user.uid,
         imageUrl: uploadedImageUrl,
         timestamp: new Date(),
@@ -136,7 +136,7 @@ export default function AddNewItemScreen({ navigation }) {
       setLocation(null);
       setImage(null);
       setAddress('');
-      navigation.goBack();
+      navigation.navigate("ReceiverHomeScreen");
     } catch (error) {
       console.error("Error saving item:", error);
       Toast.show({

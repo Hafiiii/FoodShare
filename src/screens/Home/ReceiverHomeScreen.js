@@ -27,7 +27,7 @@ export default function ReceiverHomeScreen() {
   const [filteredData, setFilteredData] = useState([]);
   const [itemData, setItemData] = useState([]);
   const [userProfile, setUserProfile] = useState({ firstName: '', lastName: '', email: '' });
-  const [selectedLocation, setSelectedLocation] = useState('All'); // State for selected location
+  const [selectedLocation, setSelectedLocation] = useState('All');
   const [locations, setLocations] = useState([]);
 
   // Fetch user profile
