@@ -13,12 +13,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath("com.facebook.react:react-native-gradle-plugin")
         classpath('com.google.gms:google-services:4.3.10')
         implementation platform('com.google.firebase:firebase-bom:33.4.0')
         implementation 'com.google.firebase:firebase-analytics'
         classpath("com.android.tools.build:gradle:7.4.1") // Check the latest compatible version
-        classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath("com.facebook.react:react-native-gradle-plugin")
     }
 }
 

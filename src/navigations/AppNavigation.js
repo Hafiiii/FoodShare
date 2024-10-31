@@ -18,10 +18,11 @@ import AddNewItemScreen from '../screens/AddItem/AddNewItemScreen';
 import DonatorHSDetail from '../screens/Home/view/DonatorHSDetail';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import FeedbackScreen from '../screens/Feedback/FeedbackScreen';
-import BookingDetailScreen from '../screens/Volunteer/BookingDetailScreen';
+import RiderBookingDetail from '../screens/Order/RiderBookingDetail';
 import ReceiverItemDetails from '../screens/Home/view/ReceiverItemDetails';
 import DonatorItemDetails from '../screens/Home/view/DonatorItemDetails';
 import ReservedItemForm from '../screens/Home/view/ReservedItemForm';
+import OrderCompletionScreen from '../screens/Order/OrderCompletionScreen';
 
 // ----------------------------------------------------------------------
 
@@ -43,15 +44,17 @@ const DonatorStackNavigator = () => (
     <Stack.Screen name="DonatorHSDetail" component={DonatorHSDetail} />
     <Stack.Screen name="ProfileHome" component={ProfileScreen} />
     <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
+    <Stack.Screen name="OrderCompletionScreen" component={OrderCompletionScreen} />
   </Stack.Navigator>
 );
 
 const RiderStackNavigator = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="RiderHome" component={RiderHomeScreen} />
-    <Stack.Screen name="BookingDetailScreen" component={BookingDetailScreen} />
+    <Stack.Screen name="RiderBookingDetail" component={RiderBookingDetail} />
     <Stack.Screen name="ProfileHome" component={ProfileScreen} />
     <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
+    <Stack.Screen name="OrderCompletionScreen" component={OrderCompletionScreen} />
   </Stack.Navigator>
 );
 
@@ -62,6 +65,7 @@ const ReceiverStackNavigator = () => (
     <Stack.Screen name="ReservedItemForm" component={ReservedItemForm} />
     <Stack.Screen name="ProfileHome" component={ProfileScreen} />
     <Stack.Screen name="FeedbackHome" component={FeedbackScreen} />
+    <Stack.Screen name="OrderCompletionScreen" component={OrderCompletionScreen} />
   </Stack.Navigator>
 );
 

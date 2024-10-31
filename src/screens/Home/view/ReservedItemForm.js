@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Button, Text, TextInput } from 'react-native-paper';
 // @react-navigation
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -11,18 +11,20 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 // firebase
-import { doc, setDoc, GeoPoint } from 'firebase/firestore';
+import { doc, setDoc, GeoPoint, getDoc } from 'firebase/firestore';
 import { firestore, auth } from '../../../utils/firebase';
 // components
 import palette from '../../../theme/palette';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // ----------------------------------------------------------------------
 
 const ReservationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     contact: Yup.string().required('Contact is required'),
+    email: Yup.string().required('Email is required').email('Invalid email format'),
     location: Yup.string().required('Location is required'),
 });
 
@@ -36,8 +38,9 @@ export default function ReservedItemForm() {
     const [error, setError] = useState(null);
     const [receiverAddress, setReceiverAddress] = useState('');
     const [location, setLocation] = useState(null);
+    const [userProfile, setUserProfile] = useState({ firstName: '', lastName: '', email: '', userRole: '' });
 
-    const { control, handleSubmit, formState: { errors } } = useForm({
+    const { control, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(ReservationSchema),
     });
 
@@ -55,6 +58,32 @@ export default function ReservedItemForm() {
             });
         })();
     }, []);
+
+    const fetchUserProfile = async () => {
+        const uid = auth.currentUser?.uid;
+
+        if (uid) {
+            try {
+                const userDoc = doc(firestore, "users", uid);
+                const userSnapshot = await getDoc(userDoc);
+
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.data();
+                    setUserProfile({
+                        firstName: userData.FirstName || '',
+                        lastName: userData.LastName || '',
+                        email: userData.UserEmailAddress || '',
+                        userRole: userData.UserRole || '',
+                    });
+                    setValue('email', userData.UserEmailAddress || '');
+                    setValue('name', userData.FirstName || '');
+                    setValue('userRole', userData.UserRole || '');
+                }
+            } catch (error) {
+                console.error("Error fetching user profile: ", error);
+            }
+        }
+    };
 
     const fetchCoordinates = async (receiverAddress) => {
         try {
@@ -111,12 +140,14 @@ export default function ReservedItemForm() {
                 itemId: item.id,
                 itemName: item.itemName,
                 donatorLocation: item.location,
+                donatorEmail: item.location,
                 receiverLocation: new GeoPoint(location.latitude, location.longitude),
                 itemDescription: item.description,
                 itemImageUrl: item.imageUrl,
                 receiverId: uid,
                 reservedAt: new Date().toISOString(),
                 receiverContactNo: data.contact,
+                receiverEmail: data.email,
                 receiverName: data.name,
                 receiverMessage: data.message,
             });
@@ -130,11 +161,20 @@ export default function ReservedItemForm() {
         }
     };
 
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
+
     return (
         <View style={{ flex: 1, backgroundColor: '#fff', padding: 16 }}>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-                <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 20 }}>Complete Reservation</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 20 }}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
+                    </TouchableOpacity>
 
+                    <Text style={{ fontSize: 20, fontWeight: '700' }}>Complete Reservation</Text>
+                </View>
                 <Controller
                     control={control}
                     name="name"
@@ -167,6 +207,22 @@ export default function ReservedItemForm() {
                     )}
                 />
                 {errors.contact && <Text style={{ color: palette.error.main }}>{errors.contact.message}</Text>}
+
+                <Controller
+                    control={control}
+                    name="email"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                            label="Email"
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            error={!!errors.email}
+                            style={{ marginVertical: 10 }}
+                        />
+                    )}
+                />
+                {errors.email && <Text style={{ color: palette.error.main }}>{errors.email.message}</Text>}
 
                 <Controller
                     control={control}

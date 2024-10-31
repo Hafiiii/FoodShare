@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ScrollView, View, TouchableHighlight, ActivityIndicator } from "react-native";
 import { Text } from 'react-native-paper';
 import axios from 'axios';
 // @react-navigation
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 // firebase
 import { doc, collection, getDoc, getDocs } from 'firebase/firestore';
 import { auth, firestore, storage } from '../../utils/firebase';
@@ -118,7 +118,7 @@ export default function DonatorHomeScreen() {
   );
 
   const onPressAddNew = () => {
-    navigation.navigate("AddNewItem");
+    navigation.navigate("AddNewItem", { email: userProfile.email });
   };
 
   if (loading) {

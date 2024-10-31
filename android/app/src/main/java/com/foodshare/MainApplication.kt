@@ -1,4 +1,4 @@
-package com.foodshare
+package com.foodshare.app
 
 import android.app.Application
 import com.facebook.react.PackageList

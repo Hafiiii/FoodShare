@@ -10,7 +10,7 @@ pluginManagement {
 
 plugins {
     // Do not specify version for React Native plugin
-    id("com.facebook.react.settings")
+    id("com.facebook.react.settings") version "0.74.5"
 }
 
 // Configure React Native settings

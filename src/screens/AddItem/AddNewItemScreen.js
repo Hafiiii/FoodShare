@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+// @react-navigation
+import { useRoute } from '@react-navigation/native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Button } from 'react-native-paper';
@@ -11,6 +13,8 @@ import Toast from 'react-native-toast-message';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 export default function AddNewItemScreen({ navigation }) {
+  const route = useRoute();
+  const { email } = route.params;
   const [itemName, setItemName] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState(null);
@@ -115,6 +119,7 @@ export default function AddNewItemScreen({ navigation }) {
       }
 
       await addDoc(collection(firestore, "items"), {
+        email,
         itemName,
         description,
         location: new GeoPoint(location.latitude, location.longitude),
@@ -136,7 +141,7 @@ export default function AddNewItemScreen({ navigation }) {
       setLocation(null);
       setImage(null);
       setAddress('');
-      navigation.navigate("ReceiverHomeScreen");
+      navigation.navigate("ReceiverHome");
     } catch (error) {
       console.error("Error saving item:", error);
       Toast.show({
@@ -239,7 +244,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginVertical: 20,
   },
   input: {
     width: '100%',

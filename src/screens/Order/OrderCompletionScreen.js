@@ -20,29 +20,38 @@ const RiderHomeScreen = () => {
       try {
         const reservedItemsCollection = collection(firestore, 'reservedItems');
         const reservedItemsSnapshot = await getDocs(reservedItemsCollection);
-        
-        const ordersList = reservedItemsSnapshot.docs.map((doc) => {
-          const data = doc.data();
 
-          const donatorLocation = data.donatorLocation && data.donatorLocation.latitude !== undefined && data.donatorLocation.longitude !== undefined
-            ? { latitude: data.donatorLocation.latitude, longitude: data.donatorLocation.longitude }
-            : null;
+        const ordersList = reservedItemsSnapshot.docs
+          .map((doc) => {
+            const data = doc.data();
 
-          const receiverLocation = data.receiverLocation && data.receiverLocation.latitude !== undefined && data.receiverLocation.longitude !== undefined
-            ? { latitude: data.receiverLocation.latitude, longitude: data.receiverLocation.longitude }
-            : null;
+            // Check if isReserved or isCompleted meets the condition for display
+            if (data.isReserved || data.isCompleted) {
+              const donatorLocation = data.donatorLocation && data.donatorLocation.latitude !== undefined && data.donatorLocation.longitude !== undefined
+                ? { latitude: data.donatorLocation.latitude, longitude: data.donatorLocation.longitude }
+                : null;
 
-          const startTime = data.reservedAt ? new Date(data.reservedAt) : new Date();
-          const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
-          
-          return {
-            orderId: doc.id, // Standardized to orderId
-            startTime: startTime.toISOString(),
-            endTime: endTime.toISOString(),
-            donatorLocation,
-            receiverLocation,
-          };
-        });
+              const receiverLocation = data.receiverLocation && data.receiverLocation.latitude !== undefined && data.receiverLocation.longitude !== undefined
+                ? { latitude: data.receiverLocation.latitude, longitude: data.receiverLocation.longitude }
+                : null;
+
+              const startTime = data.reservedAt ? new Date(data.reservedAt) : new Date();
+              const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
+
+              return {
+                orderId: doc.id,
+                isReserved: data.isReserved,
+                isCompleted: data.isCompleted,
+                startTime: startTime.toISOString(),
+                endTime: endTime.toISOString(),
+                donatorLocation,
+                receiverLocation,
+                itemName: data.itemName
+              };
+            }
+            return null; // Exclude orders that don't meet the criteria
+          })
+          .filter(order => order !== null); // Remove null values from the list
 
         const ordersWithAddresses = await Promise.all(
           ordersList.map(async (order) => {
@@ -71,6 +80,7 @@ const RiderHomeScreen = () => {
     return unsubscribe;
   }, [navigation]);
 
+
   const getAddressFromGeoPoint = async (geoPoint) => {
     if (geoPoint && geoPoint.latitude && geoPoint.longitude) {
       const lat = geoPoint.latitude;
@@ -95,19 +105,12 @@ const RiderHomeScreen = () => {
     const containerStyle = isReserved ? [styles.orderContainer, styles.reservedContainer] : styles.orderContainer;
 
     return (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate('RiderBookingDetail', { orderId: item.orderId }); // Updated to orderId
-          setReservedOrders((prev) => ({ ...prev, [item.orderId]: true }));
-        }}
-      >
-        <View style={containerStyle}>
-          <Text style={styles.foodShareShift}>FoodShare Shift</Text>
-          <Text>{new Date(item.startTime).toLocaleTimeString()} - {new Date(item.endTime).toLocaleTimeString()}</Text>
-          <Text>Donator's Location: {item.donatorLocation}</Text>
-          <Text>Receiver's Location: {item.receiverLocation}</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={containerStyle}>
+        <Text style={{ fontSize: 18, fontWeight: 800 }}>{item.itemName}</Text>
+        <Text>{new Date(item.startTime).toLocaleTimeString()} - {new Date(item.endTime).toLocaleTimeString()}</Text>
+        <Text>Donator's Location: {item.donatorLocation}</Text>
+        <Text>Receiver's Location: {item.receiverLocation}</Text>
+      </View>
     );
   };
 
@@ -118,11 +121,17 @@ const RiderHomeScreen = () => {
   return (
     <>
       <View style={styles.container}>
-        <Text style={styles.title}>Booking Planner</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 40, marginBottom: 10 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
+          </TouchableOpacity>
+
+          <Text style={styles.title}>Booking Planner</Text>
+        </View>
         <FlatList
           data={orders}
           renderItem={renderOrder}
-          keyExtractor={(item) => item.orderId.toString()} // Updated to orderId
+          keyExtractor={(item) => item.orderId.toString()}
         />
       </View>
 
@@ -149,7 +158,7 @@ const RiderHomeScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
-  title: { fontSize: 30, fontWeight: 'bold', marginTop: 40, marginBottom: 10 },
+  title: { fontSize: 30, fontWeight: 'bold' },
   orderContainer: {
     marginBottom: 10,
     padding: 15,

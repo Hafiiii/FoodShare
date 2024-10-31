@@ -23,6 +23,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.foodshare.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -30,6 +31,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2d532783-6d79-468b-8a39-45ed586d019d"
+      }
     }
   }
 }

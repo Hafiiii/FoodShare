@@ -5,10 +5,9 @@ import MapView, { Marker } from 'react-native-maps';
 // @react-navigation
 import { useNavigation } from '@react-navigation/native';
 // components
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 import palette from '../../../theme/palette';
-import BackButton from '../../../components/BackButton/BackButton';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 // ----------------------------------------------------------------------
 
@@ -81,7 +80,9 @@ export default function ReceiverItemDetails({ item }) {
                         borderTopRightRadius: 56,
                     }}
                 >
-                    <BackButton />
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Icon name="arrow-left" size={24} color={palette.primary.main} style={{ marginRight: 5 }} />
+                    </TouchableOpacity>
 
                     <Text style={{ fontSize: 19, fontWeight: '700' }}>
                         {item.itemName}

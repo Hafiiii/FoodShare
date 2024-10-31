@@ -2,13 +2,16 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Card, Button } from "react-native-paper";
 import { GOOGLE_MAPS_API_KEY } from '@env';
+// @react-navigation
+import { useNavigation } from '@react-navigation/native';
 // import { firestore } from "../../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import MapView, { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import palette from '../../../theme/palette';
 
-export default function DonatorHSDetail({ navigation, route }) {
+export default function DonatorHSDetail() {
+  const navigation = useNavigation();
   const { item, title } = route.params;
   const [address, setAddress] = useState('');
 
