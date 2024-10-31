@@ -6,9 +6,13 @@ buildscript {
         targetSdkVersion = 34
         ndkVersion = "26.1.10909125"
         kotlinVersion = "1.9.24"
-        reactNativeVersion ="0.71.3"
+        reactNativeVersion = "0.74.5"
     }
     repositories {
+        maven {
+            // Include the React Native maven repository
+            url "$rootDir/../node_modules/react-native/android"
+        }
         google()
         mavenCentral()
     }
@@ -17,7 +21,7 @@ buildscript {
         classpath('com.google.gms:google-services:4.3.10')
         implementation platform('com.google.firebase:firebase-bom:33.4.0')
         implementation 'com.google.firebase:firebase-analytics'
-        classpath("com.android.tools.build:gradle:7.4.1") // Check the latest compatible version
+        classpath("com.android.tools.build:gradle:7.5.1") // Check the latest compatible version
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
         classpath("com.facebook.react:react-native-gradle-plugin")
     }
